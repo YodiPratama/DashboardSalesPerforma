@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <script>(function(){var t=localStorage.getItem('bit_dashboard_theme');document.documentElement.setAttribute('data-theme',t||'dark');})();</script>
+  <title>Dashboard Sales — Bintang Indonesia Timur</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- DataTables -->
+  <link  rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+  <!-- SheetJS (Excel export) -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/dashboard.css" />
+</head>
+<body>
+
+<!-- ── Loading Overlay ─────────────────────────────────────────────────── -->
+<div id="loading-overlay">
+  <div style="text-align:center">
+    <div class="spinner" style="margin:0 auto 12px"></div>
+    <div class="loading-text">Memuat data…</div>
+  </div>
+</div>
+
+<!-- ── App Wrapper ─────────────────────────────────────────────────────── -->
+<div class="app-wrapper">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">BIT</div>
+      <div class="brand-text">
+        <div class="brand-name">Sales Dashboard</div>
+        <div class="brand-sub">Bintang Indonesia Timur</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Utama</div>
+
+      <a href="#" class="nav-link" data-section="overview">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span class="nav-label">Overview</span>
+      </a>
+
+      <a href="#" class="nav-link" data-section="salesman">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-label">Salesman</span>
+      </a>
+
+      <a href="#" class="nav-link" data-section="customer">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span class="nav-label">Customer Analytics</span>
+      </a>
+
+      <a href="#" class="nav-link" data-section="category">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <span class="nav-label">Category Analytics</span>
+      </a>
+
+      <a href="#" class="nav-link" data-section="outlet">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="nav-label">Outlet Health</span>
+      </a>
+
+      <a href="#" class="nav-link" data-section="trend">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span class="nav-label">Tren Bulanan</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">YodiPratama-v1.0.0 · © 2026 BIT</div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ═══════════════════════════════════════════════════ -->
+  <div class="main-content">
+
+    <!-- ── Header ──────────────────────────────────────────────────────── -->
+    <header class="dashboard-header">
+      <div class="header-left">
+        <button class="btn btn-icon" id="sidebar-toggle" title="Toggle Sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="page-title" id="page-title-text">Overview</div>
+            <span class="data-date-badge" id="data-date-badge" style="display:none"></span>
+          </div>
+          <div class="page-subtitle" id="page-month-label">—</div>
+        </div>
+      </div>
+
+      <div class="header-filters">
+        <select class="select-control" id="filter-month"></select>
+        <select class="select-control" id="filter-salesman"></select>
+        <select class="select-control" id="filter-category"></select>
+        <input type="text" class="search-box" id="outlet-search" placeholder="Cari outlet…" style="display:none" />
+      </div>
+
+      <div class="header-right">
+        <button class="btn btn-primary" id="btn-load-myob" title="Load Data MYOB">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Load Data
+        </button>
+        <button class="btn" id="btn-refresh" title="Refresh Data">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+        <button class="btn" id="btn-export-excel" title="Export Excel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Excel
+        </button>
+        <button class="btn" id="btn-export-pdf" title="Export PDF">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          PDF
+        </button>
+        <button class="btn btn-icon" id="theme-toggle" title="Toggle Theme"></button>
+      </div>
+    </header>
+
+    <!-- ── Page Content ────────────────────────────────────────────────── -->
+    <main class="page-content">
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: OVERVIEW
+      ══════════════════════════════════════════════════════════════════ -->
+      <section id="section-overview" class="dash-section active">
+
+        <!-- KPI ROW 1 -->
+        <div class="kpi-grid">
+          <div class="kpi-card" id="kpi-total-sales" style="--kpi-accent:var(--accent-blue);--kpi-icon-bg:var(--accent-blue-dim)">
+            <div class="kpi-header">
+              <div class="kpi-label">Total Sales</div>
+              <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            </div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-trend"></span><span class="kpi-meta">vs bulan lalu</span></div>
+          </div>
+
+          <div class="kpi-card" id="kpi-achievement" style="--kpi-icon-bg:var(--accent-green-dim)">
+            <div class="kpi-header">
+              <div class="kpi-label">Achievement</div>
+              <div class="kpi-icon" style="--kpi-accent:var(--accent-green)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            </div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer">
+              <span class="kpi-meta">dari target</span>
+              <span id="kpi-ach-target" style="margin-left:auto;font-size:10px;font-weight:700;color:var(--text-muted)"></span>
+            </div>
+          </div>
+
+          <div class="kpi-card" id="kpi-growth" style="--kpi-accent:var(--accent-purple);--kpi-icon-bg:var(--accent-purple-dim)">
+            <div class="kpi-header">
+              <div class="kpi-label">Growth</div>
+              <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            </div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">MoM growth</span></div>
+          </div>
+
+          <div class="kpi-card" id="kpi-projection" style="--kpi-accent:var(--accent-cyan);--kpi-icon-bg:var(--accent-cyan-dim)">
+            <div class="kpi-header">
+              <div class="kpi-label">Proyeksi</div>
+              <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            </div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta" id="kpi-proj-meta">estimasi akhir bulan</span></div>
+          </div>
+        </div>
+
+        <!-- KPI ROW 2 -->
+        <div class="kpi-grid">
+          <div class="kpi-card" id="kpi-invoice" style="--kpi-accent:var(--accent-blue);--kpi-icon-bg:var(--accent-blue-dim)">
+            <div class="kpi-header"><div class="kpi-label">Invoice</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">total invoice bulan ini</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-qty" style="--kpi-accent:var(--accent-purple);--kpi-icon-bg:var(--accent-purple-dim)">
+            <div class="kpi-header"><div class="kpi-label">Qty Terjual</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">total unit</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-ao" style="--kpi-accent:var(--accent-green);--kpi-icon-bg:var(--accent-green-dim)">
+            <div class="kpi-header"><div class="kpi-label">Active Outlet (AO)</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">outlet dengan transaksi</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-repeat" style="--kpi-accent:var(--accent-cyan);--kpi-icon-bg:var(--accent-cyan-dim)">
+            <div class="kpi-header"><div class="kpi-label">Repeat Outlet / EC</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">order bulan ini & lalu</span></div>
+          </div>
+        </div>
+
+        <!-- KPI ROW 3 -->
+        <div class="kpi-grid">
+          <div class="kpi-card" id="kpi-lost" style="--kpi-accent:var(--accent-red);--kpi-icon-bg:var(--accent-red-dim)">
+            <div class="kpi-header"><div class="kpi-label">Lost Outlet</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">tidak order bulan ini</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-reactivated" style="--kpi-accent:var(--accent-orange);--kpi-icon-bg:var(--accent-orange-dim)">
+            <div class="kpi-header"><div class="kpi-label">Reactivated Outlet</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">kembali aktif bulan ini</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-product-missing" style="--kpi-accent:var(--accent-red);--kpi-icon-bg:var(--accent-red-dim)">
+            <div class="kpi-header"><div class="kpi-label">Product Missing</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">produk tidak dipesan</span></div>
+          </div>
+          <div class="kpi-card" id="kpi-consistency" style="--kpi-accent:var(--accent-green);--kpi-icon-bg:var(--accent-green-dim)">
+            <div class="kpi-header"><div class="kpi-label">Outlet Consistency</div><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-footer"><span class="kpi-meta">aktif 3 bulan berturut</span></div>
+          </div>
+        </div>
+
+        <!-- Sales Trend (full width) -->
+        <div class="chart-card">
+          <div class="chart-title"><span class="chart-title-dot"></span>Trend Kumulatif Sales Harian</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="chart-sales-trend"></canvas></div>
+        </div>
+
+        <!-- Gauge + Salesman Ranking -->
+        <div class="charts-grid charts-row-2">
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-green)"></span>Achievement Gauge</div>
+            <div class="gauge-wrap chart-wrap" style="height:200px">
+              <canvas id="chart-gauge"></canvas>
+              <div id="gauge-center"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-orange)"></span>Ranking Salesman</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="chart-salesman-ranking"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Category Donut + Outlet Retention -->
+        <div class="charts-grid charts-row-2">
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-purple)"></span>Kontribusi Kategori</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-category-donut"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-cyan)"></span>Outlet Retention 3 Bulan</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-outlet-retention"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Product Missing Analytics -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <span class="chart-title-dot" style="background:var(--accent-red)"></span>
+            Product Missing Analytics
+            <span style="font-size:10px;color:var(--text-muted);margin-left:4px;font-weight:400">— produk tidak dipesan bulan ini</span>
+          </div>
+          <div class="pm-table-wrap">
+            <table class="pm-table">
+              <thead>
+                <tr>
+                  <th class="pm-rank">#</th>
+                  <th>Produk</th>
+                  <th class="text-right">Tx Bln Lalu</th>
+                  <th class="text-right">Sales Bln Lalu</th>
+                </tr>
+              </thead>
+              <tbody id="pm-table-body">
+                <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted)">Memuat data…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Salesman Performance Table -->
+        <div class="card" style="padding:18px 20px">
+          <div class="section-title" style="margin-bottom:14px">Performa Salesman</div>
+          <div class="sm-table-wrap">
+            <table class="sm-table">
+              <thead>
+                <tr>
+                  <th>#</th><th>Salesman</th><th class="text-right">Sales</th><th class="text-right">Target</th>
+                  <th class="text-right">Achievement</th><th class="text-right">Growth</th>
+                  <th class="text-right">AO</th><th class="text-right">Repeat</th>
+                  <th class="text-right">Lost</th><th class="text-right" style="color:var(--accent-cyan)">Reactivated</th><th class="text-right">Invoice</th>
+                </tr>
+              </thead>
+              <tbody id="salesman-tbody">
+                <tr><td colspan="11" style="text-align:center;color:var(--text-muted);padding:20px">Memuat data…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Insights + Alerts + Uncategorized -->
+        <div class="bottom-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Smart Insights
+              </div>
+            </div>
+            <div class="panel-body" id="insight-list"><div class="no-alert">Memuat insights…</div></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Alert Panel
+              </div>
+            </div>
+            <div class="panel-body" id="alert-list"><div class="no-alert">Memuat alerts…</div></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                Produk Tidak Terkategori
+                <span class="count-badge" id="uncat-count">0</span>
+              </div>
+              <button class="btn" id="copy-uncat-btn" style="font-size:11px;padding:4px 10px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+            </div>
+            <div class="panel-body" id="uncat-list"><div class="no-alert">Memuat data…</div></div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align:center;padding:10px 0 4px;color:var(--text-muted);font-size:11px;border-top:1px solid var(--border-subtle)">
+          Dashboard Sales BIT · Bintang Indonesia Timur · v1.0.0
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: SALESMAN
+      ══════════════════════════════════════════════════════════════════ -->
+      <section id="section-salesman" class="dash-section">
+
+        <!-- Salesman Cards -->
+        <div class="sm-detail-grid" id="sm-cards-grid"></div>
+
+        <!-- Charts -->
+        <div class="charts-grid charts-row-2">
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot"></span>Sales vs Target per Salesman</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-sm-vs-target"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-green)"></span>Achievement % per Salesman</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-sm-achievement"></canvas></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-cyan)"></span>Outlet Metrics per Salesman (AO / Repeat / Lost / Reactivated)</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="chart-sm-outlets"></canvas></div>
+        </div>
+
+        <!-- Detail Table -->
+        <div class="card" style="padding:18px 20px">
+          <div class="section-title">Detail Lengkap Performa Salesman</div>
+          <div class="sm-table-wrap">
+            <table class="sm-table" id="sm-detail-table">
+              <thead>
+                <tr>
+                  <th>#</th><th>Salesman</th><th>Area</th>
+                  <th class="text-right">Sales</th><th class="text-right">Target</th>
+                  <th class="text-right">Achievement</th><th class="text-right">Growth</th>
+                  <th class="text-right">AO</th><th class="text-right">Repeat</th>
+                  <th class="text-right">Lost</th><th class="text-right" style="color:var(--accent-cyan)">Reactivated</th><th class="text-right">Invoice</th>
+                </tr>
+              </thead>
+              <tbody id="sm-detail-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Achievement Per Kategori Per Salesman -->
+        <div class="card" style="padding:18px 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="section-title" style="margin:0">Achievement Per Kategori Per Salesman</div>
+            <div style="display:flex;gap:14px;font-size:12px;color:var(--text-muted)">
+              <span><span style="display:inline-block;width:12px;height:12px;background:rgba(100,116,139,0.3);border:1px solid rgba(100,116,139,0.5);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Target</span>
+              <span><span style="display:inline-block;width:12px;height:12px;background:var(--accent-blue);opacity:.8;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Sales</span>
+            </div>
+          </div>
+          <div id="chart-sm-cat-wrap" style="overflow-y:auto">
+            <div id="chart-sm-cat-inner" style="position:relative">
+              <canvas id="chart-sm-cat"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: CUSTOMER ANALYTICS
+      ══════════════════════════════════════════════════════════════════ -->
+      <section id="section-customer" class="dash-section">
+
+        <!-- Status Summary -->
+        <div class="status-summary">
+          <div class="status-card"><div class="status-card-val text-success" id="cnt-active">—</div><div class="status-card-lbl">Active ⚡</div></div>
+          <div class="status-card"><div class="status-card-val" style="color:var(--accent-blue)" id="cnt-reactivated">—</div><div class="status-card-lbl">Reactivated</div></div>
+          <div class="status-card"><div class="status-card-val text-warning" id="cnt-risk">—</div><div class="status-card-lbl">At Risk</div></div>
+          <div class="status-card"><div class="status-card-val text-danger" id="cnt-lost">—</div><div class="status-card-lbl">Lost</div></div>
+          <div class="status-card"><div class="status-card-val" style="color:var(--text-muted)" id="cnt-dormant">—</div><div class="status-card-lbl">Dormant</div></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid charts-row-2">
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot"></span>Distribusi Status Customer</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="chart-status-donut"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-orange)"></span>Top 10 Customer by Sales</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="chart-top-customers"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Customer Table -->
+        <div class="card" style="padding:18px 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div class="section-title" style="margin:0">Daftar Customer — Klik baris untuk detail</div>
+          </div>
+          <div id="customer-status-filter" style="margin-bottom:12px"></div>
+          <div class="customer-table-wrap">
+            <table id="customer-table" class="w-full" style="width:100%"></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: CATEGORY ANALYTICS
+      ══════════════════════════════════════════════════════════════════ -->
+      <section id="section-category" class="dash-section">
+
+        <!-- Charts -->
+        <div class="charts-grid charts-row-2">
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot"></span>Kontribusi Sales per Kategori</div>
+            <div class="chart-wrap" style="height:240px"><canvas id="chart-cat-donut"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-orange)"></span>Sales per Kategori (Bar)</div>
+            <div class="chart-wrap" style="height:240px"><canvas id="chart-cat-bar"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Category Cards -->
+        <div>
+          <div class="section-title">Detail per Kategori</div>
+          <div class="cat-grid" id="cat-cards"></div>
+        </div>
+
+        <!-- Uncategorized Panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Produk Tidak Terkategori
+              <span class="count-badge" id="cat-uncat-count">0</span>
+            </div>
+            <button class="btn" id="cat-copy-uncat-btn" style="font-size:11px;padding:4px 10px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy List
+            </button>
+          </div>
+          <div class="panel-body" id="cat-uncat-list"><div class="no-alert">Memuat data…</div></div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: OUTLET HEALTH
+      ══════════════════════════════════════════════════════════════════ -->
+      <section id="section-outlet" class="dash-section">
+
+        <!-- KPIs -->
+        <div class="oh-kpi-grid">
+          <div class="oh-kpi" style="border-top:3px solid var(--accent-green)">
+            <div class="oh-kpi-val text-success" id="oh-ao">—</div>
+            <div class="oh-kpi-lbl">Active Outlet (AO)</div>
+          </div>
+          <div class="oh-kpi" style="border-top:3px solid var(--accent-blue)">
+            <div class="oh-kpi-val" style="color:var(--accent-blue)" id="oh-repeat">—</div>
+            <div class="oh-kpi-lbl">Repeat Outlet</div>
+          </div>
+          <div class="oh-kpi" style="border-top:3px solid var(--accent-red)">
+            <div class="oh-kpi-val text-danger" id="oh-lost">—</div>
+            <div class="oh-kpi-lbl">Lost Outlet</div>
+          </div>
+          <div class="oh-kpi" style="border-top:3px solid var(--accent-orange)">
+            <div class="oh-kpi-val text-warning" id="oh-reactivated">—</div>
+            <div class="oh-kpi-lbl">Reactivated</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid charts-row-2">
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot"></span>Outlet Retention 3 Bulan</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-retention-main"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-green)"></span>Active Outlet per Salesman</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-ao-salesman"></canvas></div>
+          </div>
+        </div>
+
+        <!-- 3-panel outlet lists -->
+        <div class="health-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--accent-green)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Active Outlets
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                <span style="font-size:10px;font-weight:700;color:var(--accent-green)" id="active-value"></span>
+                <span class="count-badge" style="background:var(--accent-green-dim);color:var(--accent-green)" id="active-count">0</span>
+              </div>
+            </div>
+            <div class="panel-body outlet-list" id="active-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--accent-red)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Lost Outlets
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                <span style="font-size:10px;font-weight:700;color:var(--accent-red)" id="lost-value"></span>
+                <span class="count-badge" id="lost-count">0</span>
+              </div>
+            </div>
+            <div class="panel-body outlet-list" id="lost-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--accent-orange)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+                Reactivated Outlets
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                <span style="font-size:10px;font-weight:700;color:var(--accent-orange)" id="reactivated-value"></span>
+                <span class="count-badge" style="background:var(--accent-orange-dim);color:var(--accent-orange)" id="reactivated-count">0</span>
+              </div>
+            </div>
+            <div class="panel-body outlet-list" id="reactivated-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════════════
+           SECTION: TREN BULANAN
+      ══════════════════════════════════════════════════════════════════ -->
+      <section id="section-trend" class="dash-section">
+
+        <!-- Filter: Bulan + Salesman — sticky saat scroll -->
+        <div id="trend-filter-card" class="card" style="padding:14px 20px;margin-bottom:0;position:sticky;top:0;z-index:50;border-radius:0 0 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,0.18)">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="trend-filter-label">BULAN</span>
+              <div id="trend-month-filter" style="display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:0"></div>
+            </div>
+            <div style="border-top:1px solid var(--border-subtle);padding-top:10px;display:flex;align-items:center;gap:8px">
+              <span class="trend-filter-label">SALES</span>
+              <div id="trend-sm-filter" style="display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:0"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts — single column, full width -->
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px">
+
+          <!-- Chart 1: Total Sales -->
+          <div class="card" style="padding:16px 18px">
+            <div class="section-title" style="margin-bottom:12px;font-size:13px">Total Sales vs Target per Bulan</div>
+            <div class="trend-chart-wrap" style="height:260px"><canvas id="trend-chart-sales"></canvas></div>
+          </div>
+
+          <!-- Chart 2: Achievement % per Salesman -->
+          <div class="card" style="padding:16px 18px">
+            <div class="section-title" style="margin-bottom:12px;font-size:13px">Achievement % per Salesman</div>
+            <div class="trend-chart-wrap" style="height:260px"><canvas id="trend-chart-achievement"></canvas></div>
+          </div>
+
+          <!-- Chart 3: Outlet AO -->
+          <div class="card" style="padding:16px 18px">
+            <div class="section-title" style="margin-bottom:12px;font-size:13px">Outlet Aktif per Bulan</div>
+            <div class="trend-chart-wrap" style="height:260px"><canvas id="trend-chart-outlet"></canvas></div>
+          </div>
+
+          <!-- Chart 4: Sales per Kategori (stacked) -->
+          <div class="card" style="padding:16px 18px">
+            <div class="section-title" style="margin-bottom:12px;font-size:13px">Sales per Kategori per Bulan</div>
+            <div class="trend-chart-wrap" style="height:260px"><canvas id="trend-chart-category"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Summary Table -->
+        <div class="card" style="margin-top:16px;padding:0;overflow:hidden">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between">
+            <div class="section-title" style="margin:0">Ringkasan Bulanan</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table" style="width:100%;font-size:13px">
+              <thead>
+                <tr>
+                  <th>Bulan</th>
+                  <th class="text-right">Total Sales</th>
+                  <th class="text-right">Target</th>
+                  <th class="text-right">Achievement</th>
+                  <th class="text-right">Growth</th>
+                  <th class="text-right">Active Outlet</th>
+                  <th class="text-right">Repeat</th>
+                  <th class="text-right">Lost</th>
+                  <th class="text-right" style="color:var(--accent-cyan)">Reactivated</th>
+                  <th class="text-right">Invoice</th>
+                </tr>
+              </thead>
+              <tbody id="trend-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div><!-- /main-content -->
+</div><!-- /app-wrapper -->
+
+<!-- ── Customer Detail Modal ──────────────────────────────────────────────── -->
+<div id="customer-modal">
+  <div id="modal-overlay"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-customer-name" id="modal-customer-name">—</div>
+        <div class="modal-header-meta">
+          <span class="modal-meta-pill"><span class="modal-meta-lbl">Salesman</span>&nbsp;<strong id="modal-salesman-val">—</strong></span>
+          <span class="modal-meta-pill"><span class="modal-meta-lbl">Area</span>&nbsp;<strong id="modal-area-val">—</strong></span>
+          <span class="modal-meta-pill"><span class="modal-meta-lbl">AO</span>&nbsp;<strong id="modal-ao-val">—</strong></span>
+          <span class="modal-meta-pill"><span class="modal-meta-lbl">EC</span>&nbsp;<strong id="modal-ec-val">—</strong></span>
+          <span class="modal-meta-pill"><span class="modal-meta-lbl">Last Order</span>&nbsp;<strong id="modal-lastorder-val">—</strong></span>
+        </div>
+      </div>
+      <div class="modal-header-right">
+        <div id="modal-header-status"></div>
+        <button class="modal-close" id="modal-close" title="Tutup (ESC)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="modal-month-filter"></div>
+    <div class="modal-two-col">
+      <div class="modal-col-left">
+        <div class="modal-col-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Riwayat Transaksi
+          <span class="count-badge" id="modal-tx-count" style="background:var(--accent-blue-dim);color:var(--accent-blue)">0</span>
+        </div>
+        <div id="modal-tx-scroll">
+          <table class="modal-tx-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th><th>Invoice</th><th>Produk</th>
+                <th class="text-right">Qty</th><th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="modal-tx-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-col-right">
+        <div class="modal-col-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Customer Insights
+        </div>
+        <div id="modal-insights">
+          <div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px">Memuat insights…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Upload MYOB Modal ───────────────────────────────────────────────────── -->
+<div id="upload-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center">
+  <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:28px;width:420px;max-width:calc(100vw - 32px);box-shadow:0 20px 60px rgba(0,0,0,.4)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="font-size:16px;font-weight:700;color:var(--text-primary)">Load Data MYOB</div>
+      <button id="upload-modal-close" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;line-height:1;padding:4px">&times;</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px">Pilih tiga file export MYOB. Data akan dimuat langsung tanpa upload ke server.</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
+      <div class="upload-file-row" id="row-itemsale">
+        <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px">ITEMSALE.TXT <span style="font-weight:400;color:var(--text-muted)">(Transaksi Penjualan)</span></div>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px dashed var(--border-color);border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-muted);transition:border-color .2s" id="label-itemsale">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="label-itemsale-text">Pilih file…</span>
+          <input type="file" id="file-itemsale" accept=".txt,.TXT" style="display:none" />
+        </label>
+      </div>
+
+      <div class="upload-file-row" id="row-kategori">
+        <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px">KategoriItem.csv <span style="font-weight:400;color:var(--text-muted)">(Kategori Produk)</span></div>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px dashed var(--border-color);border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-muted);transition:border-color .2s" id="label-kategori">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="label-kategori-text">Pilih file…</span>
+          <input type="file" id="file-kategori" accept=".csv,.CSV" style="display:none" />
+        </label>
+      </div>
+
+      <div class="upload-file-row" id="row-target">
+        <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px">TARGET.csv <span style="font-weight:400;color:var(--text-muted)">(Target Bulanan)</span></div>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px dashed var(--border-color);border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-muted);transition:border-color .2s" id="label-target">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="label-target-text">Pilih file…</span>
+          <input type="file" id="file-target" accept=".csv,.CSV" style="display:none" />
+        </label>
+      </div>
+    </div>
+
+    <div id="upload-status" style="font-size:12px;margin-bottom:12px;min-height:18px;color:var(--text-muted)"></div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" id="btn-parse-load" style="flex:1;justify-content:center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Parse &amp; Load Data
+      </button>
+      <button class="btn" id="btn-clear-data" title="Hapus data dan kembali ke mock">Hapus Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scripts ────────────────────────────────────────────────────────────── -->
+<script src="config/config.js"></script>
+<script src="assets/js/formatter.js"></script>
+<script src="assets/js/theme.js"></script>
+<script src="assets/js/api-parser.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/table.js"></script>
+<script src="assets/js/modal.js"></script>
+<script src="assets/js/alerts.js"></script>
+<script src="assets/js/section-salesman.js"></script>
+<script src="assets/js/section-customer.js"></script>
+<script src="assets/js/section-category.js"></script>
+<script src="assets/js/section-outlet.js"></script>
+<script src="assets/js/section-trend.js"></script>
+<script src="assets/js/sections.js"></script>
+<script src="assets/js/app.js"></script>
+
+</body>
+</html>

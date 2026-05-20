@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('bit_dashboard_theme');document.documentElement.setAttribute('data-theme',t||'dark');})();</script>
+  <title>Category Analytics — Dashboard Sales BIT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/css/dashboard.css" />
+</head>
+<body>
+<div id="loading-overlay"><div style="text-align:center"><div class="spinner" style="margin:0 auto 12px"></div><div class="loading-text">Memuat data…</div></div></div>
+
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-logo">BIT</div><div class="brand-text"><div class="brand-name">Sales Dashboard</div><div class="brand-sub">Bintang Indonesia Timur</div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Utama</div>
+      <a href="../index.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="nav-label">Overview</span></a>
+      <a href="salesman.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span class="nav-label">Salesman</span></a>
+      <a href="customer-analytics.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg><span class="nav-label">Customer Analytics</span></a>
+      <a href="category-analytics.html" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span class="nav-label">Category Analytics</span></a>
+      <a href="outlet-health.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nav-label">Outlet Health</span></a>
+    </nav>
+    <div class="sidebar-footer"><div class="sidebar-footer-text">v1.0.0 · © 2025 BIT</div></div>
+  </aside>
+
+  <div class="main-content">
+    <header class="dashboard-header">
+      <div class="header-left">
+        <button class="btn btn-icon" id="sidebar-toggle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div><div class="page-title">Category Analytics</div><div class="page-subtitle" id="page-month-label">—</div></div>
+      </div>
+      <div class="header-filters">
+        <select class="select-control" id="filter-month"></select>
+        <select class="select-control" id="filter-salesman"></select>
+      </div>
+      <div class="header-right">
+        <button class="btn" id="btn-refresh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Refresh</button>
+        <button class="btn" id="btn-export-excel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Excel</button>
+        <button class="btn btn-icon" id="theme-toggle"></button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <!-- Charts Row -->
+      <div class="charts-grid charts-row-2">
+        <div class="chart-card">
+          <div class="chart-title"><span class="chart-title-dot"></span>Kontribusi Sales per Kategori</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="chart-cat-donut"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-orange)"></span>Sales per Kategori (Bar)</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="chart-cat-bar"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Category Cards -->
+      <div>
+        <div class="section-title">Detail per Kategori</div>
+        <div class="cat-grid" id="cat-cards"></div>
+      </div>
+
+      <!-- Uncategorized Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Produk Tidak Terkategori
+            <span class="count-badge" id="uncat-count">0</span>
+          </div>
+          <button class="btn" id="copy-uncat-btn" style="font-size:11px;padding:4px 10px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy List
+          </button>
+        </div>
+        <div class="panel-body" id="uncat-list"><div class="no-alert">Memuat data…</div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../config/config.js"></script>
+<script src="../assets/js/formatter.js"></script>
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/analytics.js"></script>
+<script src="../assets/js/alerts.js"></script>
+
+<script>
+let _pageRawData = null;
+let _catDonut = null, _catBar = null;
+
+function _now() { const n = new Date(); return { year:n.getFullYear(), month:n.getMonth()+1 }; }
+
+function _populateMonth() {
+  const sel = document.getElementById('filter-month');
+  const { year, month } = _now();
+  for (let i = 0; i < 12; i++) {
+    let m = month - i, y = year;
+    if (m <= 0) { m += 12; y -= 1; }
+    const opt = document.createElement('option');
+    opt.value = `${y}-${String(m).padStart(2,'0')}`;
+    opt.textContent = `${CONFIG.MONTHS_ID[m-1]} ${y}`;
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+function _populateSalesman() {
+  const sel = document.getElementById('filter-salesman');
+  sel.innerHTML = '<option value="all">Semua Salesman</option>';
+  CONFIG.SALESMAN_LIST.forEach(sm => { const o = document.createElement('option'); o.value=sm.id; o.textContent=sm.name; sel.appendChild(o); });
+}
+
+function _getProductsForCategory(rawData, filters, catName) {
+  const sales = rawData.sales.filter(s => {
+    const d = new Date(s.date);
+    if (d.getFullYear() !== filters.year || d.getMonth()+1 !== filters.month) return false;
+    if (filters.salesman !== 'all' && s.salesman_id !== filters.salesman) return false;
+    return s.category === catName;
+  });
+  const prodMap = {};
+  sales.forEach(s => { if(!prodMap[s.product]) prodMap[s.product]=0; prodMap[s.product]+=s.total; });
+  return Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+}
+
+function _renderCards(cats, rawData, filters) {
+  const grid = document.getElementById('cat-cards');
+  grid.innerHTML = cats.map(cat => {
+    const prods = _getProductsForCategory(rawData, filters, cat.name);
+    return `
+      <div class="cat-card">
+        <div class="cat-header">
+          <div class="cat-dot" style="background:${cat.color}"></div>
+          <div class="cat-name">${cat.name}</div>
+        </div>
+        <div class="cat-sales">${Fmt.currency(cat.sales)}</div>
+        <div class="cat-meta">
+          <span>${Fmt.percent(cat.pct)} kontribusi</span>
+          <span>${Fmt.number(cat.tx)} TX</span>
+          <span>${Fmt.number(cat.qty)} unit</span>
+          <span>${Fmt.number(cat.products)} SKU</span>
+        </div>
+        <div class="cat-bar"><div class="cat-bar-fill" style="width:${Math.min(cat.pct,100)}%;background:${cat.color}"></div></div>
+        <div class="prod-list">
+          ${prods.map(([name,val])=>`<div class="prod-item"><span class="prod-name">${name}</span><span class="prod-val">${Fmt.currency(val)}</span></div>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function _renderCharts(cats) {
+  const t = Theme.getChartDefaults();
+
+  if (_catDonut) _catDonut.destroy();
+  const c1 = document.getElementById('chart-cat-donut');
+  _catDonut = new Chart(c1, {
+    type: 'doughnut',
+    data: { labels: cats.map(c=>c.name), datasets: [{ data:cats.map(c=>c.sales), backgroundColor:cats.map(c=>c.color+'cc'), borderColor:cats.map(c=>c.color), borderWidth:2, hoverOffset:8 }] },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{ legend:{position:'right',labels:{color:t.textColor,usePointStyle:true}}, tooltip:{backgroundColor:t.tooltipBg,titleColor:t.tooltipText,bodyColor:t.tooltipText,callbacks:{label:ctx=>`  ${ctx.label}: ${Fmt.currency(ctx.raw)}`}} } }
+  });
+
+  if (_catBar) _catBar.destroy();
+  const c2 = document.getElementById('chart-cat-bar');
+  _catBar = new Chart(c2, {
+    type: 'bar',
+    data: { labels: cats.map(c=>c.name.length>15?c.name.substring(0,13)+'…':c.name), datasets: [{ label:'Sales', data:cats.map(c=>c.sales), backgroundColor:cats.map(c=>c.color+'cc'), borderColor:cats.map(c=>c.color), borderWidth:1.5, borderRadius:6 }] },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:t.tooltipBg,titleColor:t.tooltipText,bodyColor:t.tooltipText,callbacks:{label:ctx=>`  ${Fmt.currency(ctx.raw)}`}} },
+      scales:{ x:{ticks:{color:t.textColor,callback:v=>Fmt.currency(v)},grid:{color:t.gridColor}}, y:{ticks:{color:t.textColor},grid:{display:false}} } }
+  });
+}
+
+async function render() {
+  document.getElementById('loading-overlay').style.display = 'flex';
+  try {
+    if (!_pageRawData) _pageRawData = await API.load();
+    const [y,m] = document.getElementById('filter-month').value.split('-').map(Number);
+    const smVal = document.getElementById('filter-salesman').value;
+    const filters = { year:y, month:m, salesman:smVal, category:'all' };
+    document.getElementById('page-month-label').textContent = Fmt.monthLabel(y,m);
+
+    const cats = Analytics.calcCategoryMetrics(_pageRawData, filters);
+    const uncat = Analytics.calcUncategorized(_pageRawData, filters);
+
+    _renderCards(cats, _pageRawData, filters);
+    _renderCharts(cats);
+    Alerts.renderUncategorized(uncat);
+    Alerts.setupCopyButton(uncat);
+  } finally {
+    document.getElementById('loading-overlay').style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  Theme.init();
+  _populateMonth();
+  _populateSalesman();
+  document.getElementById('filter-month').addEventListener('change', render);
+  document.getElementById('filter-salesman').addEventListener('change', render);
+  document.getElementById('btn-refresh').addEventListener('click', () => { _pageRawData = null; render(); });
+  document.getElementById('theme-toggle').addEventListener('click', Theme.toggle);
+  document.getElementById('btn-export-excel').addEventListener('click', () => {
+    if (!_pageRawData) return;
+    const [y,m] = document.getElementById('filter-month').value.split('-').map(Number);
+    const cats = Analytics.calcCategoryMetrics(_pageRawData, { year:y, month:m, salesman:'all', category:'all' });
+    const rows = cats.map(c => ({ Kategori:c.name, Sales:c.sales, Pct:c.pct, TX:c.tx, Qty:c.qty, Produk:c.products }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Category');
+    XLSX.writeFile(wb, `Category_${y}_${String(m).padStart(2,'0')}.xlsx`);
+  });
+  document.getElementById('sidebar-toggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
+  document.addEventListener('themechange', () => { if (_pageRawData) render(); });
+  render();
+});
+</script>
+</body>
+</html>

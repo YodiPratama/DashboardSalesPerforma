@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('bit_dashboard_theme');document.documentElement.setAttribute('data-theme',t||'dark');})();</script>
+  <title>Salesman — Dashboard Sales BIT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/css/dashboard.css" />
+</head>
+<body>
+<div id="loading-overlay"><div style="text-align:center"><div class="spinner" style="margin:0 auto 12px"></div><div class="loading-text">Memuat data…</div></div></div>
+
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">BIT</div>
+      <div class="brand-text"><div class="brand-name">Sales Dashboard</div><div class="brand-sub">Bintang Indonesia Timur</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Utama</div>
+      <a href="../index.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="nav-label">Overview</span></a>
+      <a href="salesman.html" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-label">Salesman</span></a>
+      <a href="customer-analytics.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="nav-label">Customer Analytics</span></a>
+      <a href="category-analytics.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span class="nav-label">Category Analytics</span></a>
+      <a href="outlet-health.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nav-label">Outlet Health</span></a>
+    </nav>
+    <div class="sidebar-footer"><div class="sidebar-footer-text">v1.0.0 · © 2025 BIT</div></div>
+  </aside>
+
+  <div class="main-content">
+    <header class="dashboard-header">
+      <div class="header-left">
+        <button class="btn btn-icon" id="sidebar-toggle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div><div class="page-title">Salesman Performance</div><div class="page-subtitle" id="page-month-label">—</div></div>
+      </div>
+      <div class="header-filters">
+        <select class="select-control" id="filter-month"></select>
+      </div>
+      <div class="header-right">
+        <button class="btn" id="btn-refresh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Refresh</button>
+        <button class="btn" id="btn-export-excel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Excel</button>
+        <button class="btn btn-icon" id="theme-toggle"></button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <!-- Salesman Cards -->
+      <div class="sm-detail-grid" id="sm-cards-grid"></div>
+
+      <!-- Charts Row -->
+      <div class="charts-grid charts-row-2">
+        <div class="chart-card">
+          <div class="chart-title"><span class="chart-title-dot"></span>Sales vs Target per Salesman</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="chart-sm-vs-target"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-green)"></span>Achievement % per Salesman</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="chart-sm-achievement"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Outlet metrics chart -->
+      <div class="chart-card">
+        <div class="chart-title"><span class="chart-title-dot" style="background:var(--accent-cyan)"></span>Outlet Metrics per Salesman (AO / Repeat / Lost)</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="chart-sm-outlets"></canvas></div>
+      </div>
+
+      <!-- Detail Table -->
+      <div class="card" style="padding:18px 20px">
+        <div class="section-title">Detail Lengkap Performa Salesman</div>
+        <div class="sm-table-wrap">
+          <table class="sm-table" id="sm-detail-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Salesman</th><th>Area</th>
+                <th class="text-right">Sales</th><th class="text-right">Target</th>
+                <th class="text-right">Achievement</th><th class="text-right">Growth</th>
+                <th class="text-right">AO</th><th class="text-right">Repeat</th>
+                <th class="text-right">Lost</th><th class="text-right">Invoice</th>
+              </tr>
+            </thead>
+            <tbody id="sm-detail-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../config/config.js"></script>
+<script src="../assets/js/formatter.js"></script>
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/analytics.js"></script>
+<script src="../assets/js/charts.js"></script>
+<script src="../assets/js/alerts.js"></script>
+
+<script>
+const SalesmanPage = (() => {
+  let _rawData = null;
+  let _smChart1 = null, _smChart2 = null, _smChart3 = null;
+
+  function _now() { const n = new Date(); return { year: n.getFullYear(), month: n.getMonth()+1 }; }
+
+  function _populateMonth() {
+    const sel = document.getElementById('filter-month');
+    const { year, month } = _now();
+    for (let i = 0; i < 12; i++) {
+      let m = month - i, y = year;
+      if (m <= 0) { m += 12; y -= 1; }
+      const opt = document.createElement('option');
+      opt.value = `${y}-${String(m).padStart(2,'0')}`;
+      opt.textContent = `${CONFIG.MONTHS_ID[m-1]} ${y}`;
+      if (i === 0) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  }
+
+  function _renderCards(smData) {
+    const grid = document.getElementById('sm-cards-grid');
+    const sorted = [...smData].sort((a,b) => b.achievement - a.achievement);
+    const colors = ['#f59e0b','#94a3b8','#c47d50'];
+
+    grid.innerHTML = sorted.map((sm, i) => {
+      const ach = Math.min(sm.achievement, 150);
+      const color = sm.achievement >= 100 ? 'var(--accent-green)' : sm.achievement >= 85 ? 'var(--accent-orange)' : 'var(--accent-red)';
+      const rankColor = colors[i] || 'var(--text-muted)';
+      return `
+        <div class="sm-card" style="border-top-color:${color}">
+          <div class="sm-card-header">
+            <div>
+              <div class="sm-card-name">${sm.name}</div>
+              <div class="sm-card-area">${sm.area}</div>
+            </div>
+            <div style="font-size:22px;font-weight:800;color:${rankColor}">#${i+1}</div>
+          </div>
+          <div class="sm-card-stats">
+            <div class="sm-stat-item">
+              <div class="sm-stat-val" style="color:${color}">${Fmt.percent(sm.achievement)}</div>
+              <div class="sm-stat-lbl">Achievement</div>
+            </div>
+            <div class="sm-stat-item">
+              <div class="sm-stat-val">${Fmt.currency(sm.totalSales)}</div>
+              <div class="sm-stat-lbl">Sales</div>
+            </div>
+            <div class="sm-stat-item">
+              <div class="sm-stat-val">${Fmt.number(sm.ao)}</div>
+              <div class="sm-stat-lbl">AO</div>
+            </div>
+            <div class="sm-stat-item">
+              <div class="sm-stat-val">${Fmt.trendBadge(sm.growth)}</div>
+              <div class="sm-stat-lbl">Growth</div>
+            </div>
+          </div>
+          <div class="sm-ach-bar">
+            <div class="sm-ach-fill" style="width:${(ach/150)*100}%;background:${color}"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function _renderCharts(smData) {
+    const t = Theme.getChartDefaults();
+    const sorted = [...smData].sort((a,b) => b.totalSales - a.totalSales);
+    const names = sorted.map(s => s.name.split(' ')[0]);
+
+    if (_smChart1) _smChart1.destroy();
+    const c1 = document.getElementById('chart-sm-vs-target');
+    if (c1) _smChart1 = new Chart(c1, {
+      type: 'bar',
+      data: {
+        labels: names,
+        datasets: [
+          { label: 'Sales', data: sorted.map(s => s.totalSales), backgroundColor: '#4f9cf9cc', borderColor: '#4f9cf9', borderWidth: 1.5, borderRadius: 6 },
+          { label: 'Target', data: sorted.map(s => s.target), backgroundColor: 'transparent', borderColor: '#8b5cf6', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4 },
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{labels:{color:t.textColor}}, tooltip:{backgroundColor:t.tooltipBg,titleColor:t.tooltipText,bodyColor:t.tooltipText,callbacks:{label:ctx=>`  ${ctx.dataset.label}: ${Fmt.currency(ctx.raw)}`}}},
+        scales:{ x:{ticks:{color:t.textColor},grid:{color:t.gridColor}}, y:{ticks:{color:t.textColor,callback:v=>Fmt.currency(v)},grid:{color:t.gridColor}} }
+      }
+    });
+
+    if (_smChart2) _smChart2.destroy();
+    const c2 = document.getElementById('chart-sm-achievement');
+    if (c2) _smChart2 = new Chart(c2, {
+      type: 'bar',
+      data: {
+        labels: names,
+        datasets: [{ label: 'Achievement %', data: sorted.map(s => s.achievement),
+          backgroundColor: sorted.map(s => s.achievement>=100?'#4caf82cc':s.achievement>=85?'#f59e0bcc':'#ef4444cc'),
+          borderColor:     sorted.map(s => s.achievement>=100?'#4caf82':s.achievement>=85?'#f59e0b':'#ef4444'),
+          borderWidth:1.5, borderRadius:6 }]
+      },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{backgroundColor:t.tooltipBg,titleColor:t.tooltipText,bodyColor:t.tooltipText,callbacks:{label:ctx=>`  ${Fmt.percent(ctx.raw)}`}} },
+        scales:{ x:{ticks:{color:t.textColor},grid:{display:false}}, y:{ticks:{color:t.textColor,callback:v=>Fmt.percent(v)},grid:{color:t.gridColor}} }
+      }
+    });
+
+    if (_smChart3) _smChart3.destroy();
+    const c3 = document.getElementById('chart-sm-outlets');
+    if (c3) _smChart3 = new Chart(c3, {
+      type: 'bar',
+      data: {
+        labels: names,
+        datasets: [
+          { label:'AO',     data:sorted.map(s=>s.ao),     backgroundColor:'#4f9cf9aa', borderColor:'#4f9cf9', borderWidth:1.5, borderRadius:4 },
+          { label:'Repeat', data:sorted.map(s=>s.repeat), backgroundColor:'#4caf82aa', borderColor:'#4caf82', borderWidth:1.5, borderRadius:4 },
+          { label:'Lost',   data:sorted.map(s=>s.lost),   backgroundColor:'#ef4444aa', borderColor:'#ef4444', borderWidth:1.5, borderRadius:4 },
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{labels:{color:t.textColor,usePointStyle:true}}, tooltip:{backgroundColor:t.tooltipBg,titleColor:t.tooltipText,bodyColor:t.tooltipText} },
+        scales:{ x:{ticks:{color:t.textColor},grid:{display:false}}, y:{ticks:{color:t.textColor},grid:{color:t.gridColor}} }
+      }
+    });
+  }
+
+  function _renderTable(smData) {
+    const tbody = document.getElementById('sm-detail-tbody');
+    const sorted = [...smData].sort((a,b) => b.achievement - a.achievement);
+    tbody.innerHTML = sorted.map((sm, i) => {
+      const achColor = sm.achievement>=100?'text-success':sm.achievement>=85?'text-warning':'text-danger';
+      return `<tr>
+        <td><span class="rank-badge rank-${i+1}">${i+1}</span></td>
+        <td><div class="sm-name">${sm.name}</div></td>
+        <td><div class="sm-area">${sm.area}</div></td>
+        <td class="text-right font-semibold">${Fmt.currency(sm.totalSales)}</td>
+        <td class="text-right text-muted">${Fmt.currency(sm.target)}</td>
+        <td class="text-right ${achColor} font-semibold">${Fmt.percent(sm.achievement)}</td>
+        <td class="text-right">${Fmt.trendBadge(sm.growth)}</td>
+        <td class="text-right">${Fmt.number(sm.ao)}</td>
+        <td class="text-right">${Fmt.number(sm.repeat)}</td>
+        <td class="text-right">${Fmt.number(sm.lost)}</td>
+        <td class="text-right">${Fmt.number(sm.invoices)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function render() {
+    document.getElementById('loading-overlay').style.display = 'flex';
+    try {
+      if (!_rawData) _rawData = await API.load();
+      const [y,m] = document.getElementById('filter-month').value.split('-').map(Number);
+      const filters = { year:y, month:m, salesman:'all', category:'all' };
+      document.getElementById('page-month-label').textContent = Fmt.monthLabel(y, m);
+
+      const smData = Analytics.calcSalesmanMetrics(_rawData, filters);
+      _renderCards(smData);
+      _renderCharts(smData);
+      _renderTable(smData);
+    } finally {
+      document.getElementById('loading-overlay').style.display = 'none';
+    }
+  }
+
+  function init() {
+    Theme.init();
+    _populateMonth();
+    document.getElementById('filter-month').addEventListener('change', render);
+    document.getElementById('btn-refresh').addEventListener('click', () => { _rawData = null; render(); });
+    document.getElementById('theme-toggle').addEventListener('click', Theme.toggle);
+    document.getElementById('btn-export-excel').addEventListener('click', () => {
+      if (!_rawData) return;
+      const [y,m] = document.getElementById('filter-month').value.split('-').map(Number);
+      const smData = Analytics.calcSalesmanMetrics(_rawData, { year:y, month:m, salesman:'all', category:'all' });
+      const rows = smData.map(s => ({ Salesman:s.name, Area:s.area, Sales:s.totalSales, Target:s.target, Achievement:s.achievement, AO:s.ao, Repeat:s.repeat, Lost:s.lost, Invoice:s.invoices }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Salesman');
+      XLSX.writeFile(wb, `Salesman_${y}_${String(m).padStart(2,'0')}.xlsx`);
+    });
+    document.getElementById('sidebar-toggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+    document.addEventListener('themechange', () => { if (_rawData) render(); });
+    render();
+  }
+
+  return { init };
+})();
+
+document.addEventListener('DOMContentLoaded', SalesmanPage.init);
+</script>
+</body>
+</html>

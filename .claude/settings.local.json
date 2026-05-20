@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Recurse -File | Where-Object { $_.Extension -in '.html','.js','.css' } | ForEach-Object { $_.FullName.Replace\\(\\(Get-Location\\).Path + '\\\\',''\\) } | Sort-Object)"
+    ]
+  }
+}

@@ -117,58 +117,86 @@ const Parser = (() => {
     return records;
   }
 
-  // ITEMSALE — tab-separated (file upload) or CSV (Sheets)
+  // ITEMSALE — tab-separated (file upload) or compact 9-col CSV (Sheets)
   function parseItemSale(text, kategoriMap, isCSV = false) {
     const smMap = _buildSalesmanMap();
     const sales = [];
-
     const lines = text.replace(/\r/g, '').split('\n');
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (!line.trim()) continue;
 
-      const cols = isCSV ? _parseCSVLine(line) : line.split('\t');
-      if (cols.length < 26) continue;
+    if (isCSV) {
+      // Compact 9-column format from Google Sheets (via Apps Script):
+      // 0:customer 1:invoice 2:date 3:qty 4:product 5:price 6:total 7:salesman 8:customer_id
+      // Start from i=0 — header row auto-skipped (salesman lookup fails for "salesman" text)
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const cols = _parseCSVLine(line);
+        if (cols.length < 8) continue;
 
-      // Salesman (col 25: "Salesperson Last Name" — MYOB stores full name here)
-      const smRaw = (cols[25] || '').trim().toUpperCase();
-      const sm    = smMap[smRaw];
-      if (!sm) continue;
+        const smRaw = (cols[7] || '').trim().toUpperCase();
+        const sm    = smMap[smRaw];
+        if (!sm) continue;
 
-      // Date (col 10: DD/MM/YYYY)
-      const dateRaw = (cols[10] || '').trim();
-      if (!dateRaw.match(/^\d{2}\/\d{2}\/\d{4}$/)) continue;
+        const dateRaw = (cols[2] || '').trim();
+        if (!dateRaw.match(/^\d{2}\/\d{2}\/\d{4}$/)) continue;
 
-      // Inc-Tax Total (col 21) — the customer-facing amount including PPN
-      const total = _parseRupiah(cols[21]);
-      if (total <= 0) continue;
+        const total = _parseRupiah(cols[6]);
+        if (total <= 0) continue;
 
-      // Product description (col 16) for category lookup
-      const product  = (cols[16] || '').trim();
-      const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';
+        const product  = (cols[4] || '').trim();
+        const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';
+        const price    = _parseRupiah(cols[5]);
+        const qty      = parseFloat((cols[3] || '0').trim().replace(',', '.')) || 0;
+        const customerName = (cols[0] || '').trim();
+        const customerId   = (cols[8] || '').trim();
 
-      // Inc-Tax unit price (col 18)
-      const price = _parseRupiah(cols[18]);
-      const qty   = parseFloat((cols[15] || '0').trim().replace(',', '.')) || 0;
+        sales.push({
+          date:        _parseDate(dateRaw),
+          invoice:     (cols[1] || '').trim(),
+          salesman:    sm.name,
+          salesman_id: sm.id,
+          customer:    customerName,
+          customer_id: customerId || customerName,
+          area:        sm.area,
+          product, category, qty, price, total,
+        });
+      }
+    } else {
+      // Original tab-separated format (manual file upload — 60+ columns)
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const cols = line.split('\t');
+        if (cols.length < 26) continue;
 
-      // Customer: name (col 0), stable ID (col 58)
-      const customerName = (cols[0] || '').trim();
-      const customerId   = cols.length > 58 ? (cols[58] || '').trim() : '';
+        const smRaw = (cols[25] || '').trim().toUpperCase();
+        const sm    = smMap[smRaw];
+        if (!sm) continue;
 
-      sales.push({
-        date:        _parseDate(dateRaw),
-        invoice:     (cols[9] || '').trim(),
-        salesman:    sm.name,
-        salesman_id: sm.id,
-        customer:    customerName,
-        customer_id: customerId || customerName,
-        area:        sm.area,
-        product,
-        category,
-        qty,
-        price,
-        total,
-      });
+        const dateRaw = (cols[10] || '').trim();
+        if (!dateRaw.match(/^\d{2}\/\d{2}\/\d{4}$/)) continue;
+
+        const total = _parseRupiah(cols[21]);
+        if (total <= 0) continue;
+
+        const product  = (cols[16] || '').trim();
+        const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';
+        const price    = _parseRupiah(cols[18]);
+        const qty      = parseFloat((cols[15] || '0').trim().replace(',', '.')) || 0;
+        const customerName = (cols[0] || '').trim();
+        const customerId   = cols.length > 58 ? (cols[58] || '').trim() : '';
+
+        sales.push({
+          date:        _parseDate(dateRaw),
+          invoice:     (cols[9] || '').trim(),
+          salesman:    sm.name,
+          salesman_id: sm.id,
+          customer:    customerName,
+          customer_id: customerId || customerName,
+          area:        sm.area,
+          product, category, qty, price, total,
+        });
+      }
     }
     return sales;
   }

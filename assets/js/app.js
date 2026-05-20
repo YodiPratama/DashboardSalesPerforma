@@ -399,6 +399,9 @@ const App = (() => {
   async function init() {
     Theme.init();
 
+    // Selalu baca Google Sheets segar setiap reload — hapus data upload sebelumnya
+    API.clearSession();
+
     // Compact chart defaults on mobile: smaller legend text + tick labels
     if (window.innerWidth <= 768) {
       Chart.defaults.font.size = 10;

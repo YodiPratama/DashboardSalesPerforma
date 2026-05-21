@@ -56,25 +56,26 @@ const Fmt = (() => {
   }
 
   // Achievement color helpers — thresholds: <50 red, 50-90 orange, 90-100 green, ≥100 blue
-  function achClass(pct) {
+  // greenAt: threshold hijau — 90 untuk global/salesman total, 70 untuk per-kategori
+  function achClass(pct, greenAt = 90) {
     if (pct === null || pct === undefined) return '';
-    if (pct >= 100) return 'text-blue';
-    if (pct >= 90)  return 'text-success';
-    if (pct >= 50)  return 'text-warning';
+    if (pct >= 100)    return 'text-blue';
+    if (pct >= greenAt) return 'text-success';
+    if (pct >= 50)     return 'text-warning';
     return 'text-danger';
   }
-  function achColor(pct) {
+  function achColor(pct, greenAt = 90) {
     if (pct === null || pct === undefined) return 'var(--text-muted)';
-    if (pct >= 100) return 'var(--accent-blue)';
-    if (pct >= 90)  return 'var(--accent-green)';
-    if (pct >= 50)  return 'var(--accent-orange)';
+    if (pct >= 100)    return 'var(--accent-blue)';
+    if (pct >= greenAt) return 'var(--accent-green)';
+    if (pct >= 50)     return 'var(--accent-orange)';
     return 'var(--accent-red)';
   }
-  function achHex(pct) {
+  function achHex(pct, greenAt = 90) {
     if (pct === null || pct === undefined) return '#64748b';
-    if (pct >= 100) return '#4f9cf9';
-    if (pct >= 90)  return '#4caf82';
-    if (pct >= 50)  return '#f59e0b';
+    if (pct >= 100)    return '#4f9cf9';
+    if (pct >= greenAt) return '#4caf82';
+    if (pct >= 50)     return '#f59e0b';
     return '#ef4444';
   }
 

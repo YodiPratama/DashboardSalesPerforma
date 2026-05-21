@@ -200,7 +200,7 @@ const SalesmanSection = (() => {
         meta1.data.forEach((bar, idx) => {
           const row = rows[idx];
           if (row.achievement === null) return;
-          ctx.fillStyle = Fmt.achHex(row.achievement);
+          ctx.fillStyle = Fmt.achHex(row.achievement, 70);
           ctx.fillText(Fmt.percent(row.achievement), chartArea.right + 8, bar.y);
         });
 

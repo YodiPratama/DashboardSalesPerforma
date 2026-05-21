@@ -1,11 +1,15 @@
 const CONFIG = {
   GAS_API_URL: '',
 
+  // ── GitHub Raw URL — ITEMSALE.TXT langsung dari repo (prioritas utama) ──────
+  // Taruh file ITEMSALE.TXT di folder data/ lalu commit + push
+  GITHUB_ITEMSALE_URL: 'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/ITEMSALE.TXT',
+
   // ── Google Sheets CSV URLs (Publish to web → CSV) ──────────────────────────
-  // Isi setelah publish masing-masing sheet di Google Sheets
-  SHEETS_SALES_URL:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=0&single=true&output=csv',   // Sheet ITEMSALE (tab-separated import)
-  SHEETS_KATEGORI_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=1369270145&single=true&output=csv',   // Sheet KategoriItem
-  SHEETS_TARGET_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=748998745&single=true&output=csv',   // Sheet TARGET
+  // Kategori + Target tetap dari Google Sheets (file kecil, tidak timeout)
+  SHEETS_SALES_URL:    '',   // Tidak dipakai — data penjualan kini dari GITHUB_ITEMSALE_URL
+  SHEETS_KATEGORI_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=1369270145&single=true&output=csv',
+  SHEETS_TARGET_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=748998745&single=true&output=csv',
 
   APP_NAME: 'Dashboard Sales BIT',
   APP_VERSION: '1.0.0',

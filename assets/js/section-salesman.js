@@ -92,7 +92,8 @@ const SalesmanSection = (() => {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { labels: { color: t.textColor, usePointStyle: true } }, tooltip: { backgroundColor: t.tooltipBg, titleColor: t.tooltipText, bodyColor: t.tooltipText } },
         scales: { x: { ticks: { color: t.textColor }, grid: { display: false } }, y: { ticks: { color: t.textColor }, grid: { color: t.gridColor } } }
-      }
+      },
+      plugins: [BarLabelPlugin],
     });
   }
 

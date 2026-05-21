@@ -28,6 +28,16 @@ const OutletSection = (() => {
     return total;
   }
 
+  function _openCustomerDrilldown(custId) {
+    if (!AppState || !AppState.rawData) return;
+    const customers = Analytics.calcCustomerTable(AppState.rawData, AppState.filters);
+    const cust = customers.find(c => c.id === custId);
+    SectionManager.showSection('customer');
+    if (!cust) return;
+    const showAllMonths = ['Lost', 'Dormant'].includes(cust.status);
+    Modal.openCustomerModal(cust, AppState.rawData, AppState.filters, { showAllMonths });
+  }
+
   function _renderOutletList(elId, custIds, raw, curSales) {
     const el = document.getElementById(elId);
     if (!el) return;
@@ -38,7 +48,7 @@ const OutletSection = (() => {
       return { id, ...info, sales: salesMap[id] || 0 };
     }).sort((a, b) => b.sales - a.sales);
     el.innerHTML = items.map(o => `
-      <div class="outlet-row">
+      <div class="outlet-row" data-cid="${o.id}">
         <div>
           <div class="outlet-name">${o.name}</div>
           <div class="outlet-sub">${o.salesman} · ${o.area}</div>
@@ -46,6 +56,10 @@ const OutletSection = (() => {
         <div class="outlet-sales">${o.sales > 0 ? Fmt.currency(o.sales) : '<span class="text-muted">—</span>'}</div>
       </div>
     `).join('') || '<div class="no-alert">Tidak ada data</div>';
+    el.onclick = e => {
+      const row = e.target.closest('.outlet-row[data-cid]');
+      if (row) _openCustomerDrilldown(row.getAttribute('data-cid'));
+    };
   }
 
   function _renderCharts(retention, smAO) {
@@ -68,7 +82,8 @@ const OutletSection = (() => {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { labels: { color: t.textColor, usePointStyle: true } }, tooltip: { backgroundColor: t.tooltipBg, titleColor: t.tooltipText, bodyColor: t.tooltipText } },
         scales: { x: { ticks: { color: t.textColor }, grid: { color: t.gridColor } }, y: { ticks: { color: t.textColor }, grid: { color: t.gridColor } } }
-      }
+      },
+      plugins: [BarLabelPlugin],
     });
 
     if (_aoChart) _aoChart.destroy();
@@ -87,7 +102,8 @@ const OutletSection = (() => {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { labels: { color: t.textColor, usePointStyle: true } }, tooltip: { backgroundColor: t.tooltipBg, titleColor: t.tooltipText, bodyColor: t.tooltipText } },
         scales: { x: { ticks: { color: t.textColor }, grid: { display: false } }, y: { ticks: { color: t.textColor }, grid: { color: t.gridColor } } }
-      }
+      },
+      plugins: [BarLabelPlugin],
     });
   }
 

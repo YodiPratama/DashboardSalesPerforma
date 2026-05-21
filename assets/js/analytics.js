@@ -16,6 +16,17 @@ const Analytics = (() => {
     return { year, month: month - 1 };
   }
 
+  // Growth berbasis rata-rata harian — adil untuk bulan yang belum selesai
+  function _dailyGrowth(curTotal, prevTotal, year, month, prev) {
+    const now = new Date();
+    const isCurrentMonth = year === now.getFullYear() && month === now.getMonth() + 1;
+    const daysInCur  = isCurrentMonth ? Math.max(1, now.getDate()) : new Date(year, month, 0).getDate();
+    const daysInPrev = new Date(prev.year, prev.month, 0).getDate();
+    const curAvg  = curTotal  / daysInCur;
+    const prevAvg = prevTotal / daysInPrev;
+    return prevAvg > 0 ? ((curAvg - prevAvg) / prevAvg) * 100 : 0;
+  }
+
   function _uniqueOutlets(sales) {
     return new Set(sales.map(s => s.customer_id));
   }
@@ -35,7 +46,7 @@ const Analytics = (() => {
     // Sales totals
     const totalSales = curSales.reduce((s, r) => s + r.total, 0);
     const prevTotal  = prevSales.reduce((s, r) => s + r.total, 0);
-    const growth     = prevTotal > 0 ? ((totalSales - prevTotal) / prevTotal) * 100 : 0;
+    const growth     = _dailyGrowth(totalSales, prevTotal, year, month, prev);
 
     // Target — filter by category when active; targets without category field match always
     const smTargets = targets.filter(t =>
@@ -114,7 +125,7 @@ const Analytics = (() => {
 
       const totalSales = curSales.reduce((s, r) => s + r.total, 0);
       const prevTotal  = prevSales.reduce((s, r) => s + r.total, 0);
-      const growth     = prevTotal > 0 ? ((totalSales - prevTotal) / prevTotal) * 100 : 0;
+      const growth     = _dailyGrowth(totalSales, prevTotal, year, month, prev);
 
       const smTargetRows = targets.filter(t =>
         t.salesman_id === sm.id && t.year === year && t.month === month &&

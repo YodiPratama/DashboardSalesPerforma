@@ -98,6 +98,7 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  overflow: clip;   /* clip tidak intercept scroll event — fixes native <select> scroll */
   min-width: 0;
 }
 
@@ -528,6 +529,26 @@ table.dataTable tbody tr:hover .row-arrow-icon { stroke: var(--accent-blue); tra
 .prod-name { font-weight: 600; color: var(--text-primary); font-family: monospace; font-size: 11px; }
 .prod-val  { color: var(--accent-blue); font-weight: 600; }
 
+/* ── Product Analytics Table ─────────────────────────────────────────────── */
+.prod-table-wrap { max-height: 440px; overflow-y: auto; }
+.prod-table-wrap::-webkit-scrollbar { width: 5px; }
+.prod-table-wrap::-webkit-scrollbar-track { background: transparent; }
+.prod-table-wrap::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+.prod-analytics-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.prod-analytics-table thead tr { position: sticky; top: 0; z-index: 2; }
+.prod-analytics-table th {
+  padding: 8px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--text-muted); white-space: nowrap;
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle);
+}
+.prod-analytics-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary); vertical-align: middle;
+}
+.prod-analytics-table tbody tr:hover td { background: var(--bg-card-hover); }
+.prod-analytics-table tbody tr:last-child td { border-bottom: none; }
+.prod-analytics-table td.prod-cell-name { max-width: 240px; font-weight: 600; word-break: break-word; }
+
 /* ── 13. Outlet Health Page ────────────────────────────────────────────────── */
 .oh-kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
 
@@ -553,6 +574,8 @@ table.dataTable tbody tr:hover .row-arrow-icon { stroke: var(--accent-blue); tra
   transition: background 0.15s, border-color 0.15s;
 }
 .outlet-row:hover { background: var(--bg-card-hover); border-color: var(--border-muted); }
+.outlet-row[data-cid] { cursor: pointer; }
+.outlet-row[data-cid]:hover .outlet-name { color: var(--accent-blue); text-decoration: underline; }
 .outlet-name  { font-size: 13px; font-weight: 600; color: var(--text-primary); }
 .outlet-sub   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .outlet-sales { font-size: 13px; font-weight: 600; color: var(--accent-blue); }
@@ -604,7 +627,7 @@ table.dataTable tbody tr:hover .row-arrow-icon { stroke: var(--accent-blue); tra
   border: 1px solid var(--border-muted);
   border-radius: 18px;
   box-shadow: var(--shadow-modal);
-  width: 80vw; max-width: 1100px; height: 80vh;
+  width: 80vw; max-width: 1100px; height: 92vh;
   display: flex; flex-direction: column; overflow: hidden;
   opacity: 0; transform: scale(0.94) translateY(18px);
   transition: opacity 0.24s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);

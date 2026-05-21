@@ -65,6 +65,72 @@ const CategorySection = (() => {
     });
   }
 
+  function _calcProductMetrics(raw, filters) {
+    const sales = raw.sales.filter(s => {
+      const d = new Date(s.date);
+      if (d.getFullYear() !== filters.year || d.getMonth() + 1 !== filters.month) return false;
+      if (filters.salesman !== 'all' && s.salesman_id !== filters.salesman) return false;
+      return true;
+    });
+    const map = {};
+    sales.forEach(s => {
+      if (!map[s.product]) map[s.product] = { product: s.product, category: s.category || '—', sales: 0, qty: 0, invoices: new Set(), custs: new Set(), lastDate: '' };
+      const p = map[s.product];
+      p.sales += s.total;
+      p.qty   += (s.qty || 0);
+      p.invoices.add(s.invoice);
+      p.custs.add(s.customer_id);
+      if (!p.lastDate || s.date > p.lastDate) p.lastDate = s.date;
+    });
+    return Object.values(map).map(p => ({
+      product: p.product, category: p.category, sales: p.sales, qty: p.qty,
+      tx: p.invoices.size, custs: p.custs.size,
+      avgTx: p.invoices.size ? p.sales / p.invoices.size : 0,
+      lastDate: p.lastDate,
+    })).sort((a, b) => b.sales - a.sales);
+  }
+
+  function _renderProductTable(raw, filters) {
+    const tbody = document.getElementById('prod-analytics-body');
+    const countEl = document.getElementById('prod-analytics-count');
+    if (!tbody) return;
+
+    const cats = Analytics.calcCategoryMetrics(raw, filters);
+    const colorMap = {};
+    cats.forEach(c => { colorMap[c.name] = c.color; });
+
+    const products = _calcProductMetrics(raw, filters);
+    if (countEl) countEl.textContent = products.length;
+
+    tbody.innerHTML = products.length ? products.map((p, i) => {
+      const dot = colorMap[p.category] || '#64748b';
+      return `<tr class="prod-row" data-name="${p.product.toLowerCase()}">
+        <td class="text-center" style="color:var(--text-muted);font-size:12px;font-weight:600">${i + 1}</td>
+        <td class="prod-cell-name">${p.product}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
+          <span style="width:8px;height:8px;border-radius:50%;background:${dot};flex-shrink:0"></span>${p.category}
+        </span></td>
+        <td class="text-right" style="font-weight:700;color:var(--accent-blue)">${Fmt.currency(p.sales)}</td>
+        <td class="text-right">${Fmt.number(p.tx)}</td>
+        <td class="text-right">${Fmt.number(p.qty)}</td>
+        <td class="text-right">${Fmt.number(p.custs)}</td>
+        <td class="text-right" style="color:var(--text-secondary)">${Fmt.currency(p.avgTx)}</td>
+        <td class="text-right" style="color:var(--text-muted);font-size:12px">${Fmt.date(p.lastDate)}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-muted)">Tidak ada data produk bulan ini</td></tr>';
+
+    const search = document.getElementById('prod-search');
+    if (search) {
+      search.value = '';
+      search.oninput = () => {
+        const q = search.value.toLowerCase();
+        tbody.querySelectorAll('.prod-row').forEach(row => {
+          row.style.display = !q || row.dataset.name.includes(q) ? '' : 'none';
+        });
+      };
+    }
+  }
+
   function _renderUncategorized(uncat) {
     const el  = document.getElementById('cat-uncat-list');
     const cnt = document.getElementById('cat-uncat-count');
@@ -103,6 +169,7 @@ const CategorySection = (() => {
     const uncat = Analytics.calcUncategorized(raw, filters);
     _renderCards(cats, raw, filters);
     _renderCharts(cats);
+    _renderProductTable(raw, filters);
     _renderUncategorized(uncat);
     _setupCopyButton(uncat);
   }

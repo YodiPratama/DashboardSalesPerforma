@@ -15,21 +15,46 @@ const App = (() => {
   }
 
   // ─── Populate Filters ─────────────────────────────────────────────────────
-  function _populateMonthFilter() {
+  // Jika rawData tersedia: pakai bulan aktual dari data (semua bulan yang ada)
+  // Fallback: 12 bulan ke belakang dari hari ini
+  function _populateMonthFilter(rawData) {
     const sel = document.getElementById('filter-month');
     if (!sel) return;
-    const { year, month } = _now();
+
+    const currentVal = sel.value; // simpan pilihan saat ini sebelum rebuild
     sel.innerHTML = '';
-    for (let i = 0; i < 12; i++) {
-      let m = month - i;
-      let y = year;
-      if (m <= 0) { m += 12; y -= 1; }
-      const opt = document.createElement('option');
-      opt.value = `${y}-${String(m).padStart(2,'0')}`;
-      opt.textContent = `${CONFIG.MONTHS_ID[m - 1]} ${y}`;
-      if (i === 0) opt.selected = true;
-      sel.appendChild(opt);
+
+    let months = []; // array of 'YYYY-MM' string, newest first
+
+    if (rawData && rawData.sales && rawData.sales.length) {
+      const set = new Set(rawData.sales.map(s => s.date.substring(0, 7)).filter(Boolean));
+      months = [...set].sort().reverse();
     }
+
+    // Fallback: 12 bulan ke belakang jika data kosong
+    if (!months.length) {
+      const { year, month } = _now();
+      for (let i = 0; i < 12; i++) {
+        let m = month - i, y = year;
+        if (m <= 0) { m += 12; y -= 1; }
+        months.push(`${y}-${String(m).padStart(2,'0')}`);
+      }
+    }
+
+    months.forEach((ym, i) => {
+      const [y, m] = ym.split('-').map(Number);
+      const opt = document.createElement('option');
+      opt.value = ym;
+      opt.textContent = `${CONFIG.MONTHS_ID[m - 1]} ${y}`;
+      // Pertahankan pilihan sebelumnya; default ke bulan terbaru (i===0)
+      if (currentVal ? ym === currentVal : i === 0) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    // Sync AppState ke nilai yang benar-benar terpilih
+    const selected = sel.value.split('-').map(Number);
+    AppState.filters.year  = selected[0];
+    AppState.filters.month = selected[1];
   }
 
   function _populateSalesmanFilter() {
@@ -148,8 +173,14 @@ const App = (() => {
     _setLoading(true);
 
     try {
-      if (!AppState.rawData) {
+      const isFirstLoad = !AppState.rawData;
+      if (isFirstLoad) {
         AppState.rawData = await API.load(AppState.filters.year, AppState.filters.month);
+      }
+
+      // Setelah data pertama kali dimuat: rebuild filter bulan dari bulan aktual di data
+      if (isFirstLoad && AppState.rawData?.sales?.length) {
+        _populateMonthFilter(AppState.rawData);
       }
 
       // Compute latest transaction date for the data badge

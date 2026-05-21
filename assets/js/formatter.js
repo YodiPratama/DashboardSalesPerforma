@@ -55,25 +55,25 @@ const Fmt = (() => {
     return `<span class="${cls}">${arrow} ${percent(Math.abs(pct))}</span>`;
   }
 
-  // Achievement color helpers — thresholds: <50 red, 50-70 orange, 70-100 green, ≥100 blue
+  // Achievement color helpers — thresholds: <50 red, 50-90 orange, 90-100 green, ≥100 blue
   function achClass(pct) {
     if (pct === null || pct === undefined) return '';
     if (pct >= 100) return 'text-blue';
-    if (pct >= 70)  return 'text-success';
+    if (pct >= 90)  return 'text-success';
     if (pct >= 50)  return 'text-warning';
     return 'text-danger';
   }
   function achColor(pct) {
     if (pct === null || pct === undefined) return 'var(--text-muted)';
     if (pct >= 100) return 'var(--accent-blue)';
-    if (pct >= 70)  return 'var(--accent-green)';
+    if (pct >= 90)  return 'var(--accent-green)';
     if (pct >= 50)  return 'var(--accent-orange)';
     return 'var(--accent-red)';
   }
   function achHex(pct) {
     if (pct === null || pct === undefined) return '#64748b';
     if (pct >= 100) return '#4f9cf9';
-    if (pct >= 70)  return '#4caf82';
+    if (pct >= 90)  return '#4caf82';
     if (pct >= 50)  return '#f59e0b';
     return '#ef4444';
   }

@@ -233,7 +233,8 @@ const TrendSection = (() => {
           x: { grid: { color: t.gridColor }, ticks: { color: t.textColor } },
           y: { grid: { color: t.gridColor }, ticks: { color: t.textColor } },
         },
-      }
+      },
+      plugins: [BarLabelPlugin],
     });
   }
 

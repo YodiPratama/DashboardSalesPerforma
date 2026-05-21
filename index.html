@@ -475,6 +475,38 @@
           <div class="cat-grid" id="cat-cards"></div>
         </div>
 
+        <!-- Product Analytics Table -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              Analisis Produk
+              <span class="count-badge" id="prod-analytics-count" style="background:var(--accent-blue);color:#fff">0</span>
+            </div>
+            <input type="text" id="prod-search" class="search-box" placeholder="Cari produk…" style="width:220px">
+          </div>
+          <div class="prod-table-wrap">
+            <table class="prod-analytics-table">
+              <thead>
+                <tr>
+                  <th style="width:36px" class="text-center">#</th>
+                  <th>Produk</th>
+                  <th>Kategori</th>
+                  <th class="text-right">Sales</th>
+                  <th class="text-right">TX</th>
+                  <th class="text-right">QTY</th>
+                  <th class="text-right">Outlet</th>
+                  <th class="text-right">Avg/TX</th>
+                  <th class="text-right">Last Order</th>
+                </tr>
+              </thead>
+              <tbody id="prod-analytics-body">
+                <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-muted)">Memuat data…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Uncategorized Panel -->
         <div class="panel">
           <div class="panel-header">

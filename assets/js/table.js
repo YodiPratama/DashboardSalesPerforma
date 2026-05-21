@@ -4,6 +4,13 @@ const Table = (() => {
   let _filters   = null;
   let _customers = [];
 
+  // Native delegation handler — module-level agar bisa di-removeEventListener
+  function _handleClick(e) {
+    const tr = e.target.closest('tr[data-customer-id]');
+    if (!tr) return;
+    _openModal(tr.getAttribute('data-customer-id'));
+  }
+
   function _statusBadge(status) {
     const map = {
       'Active':      '<span class="badge badge-green">Active</span>',
@@ -145,11 +152,19 @@ const Table = (() => {
     });
     tableEl.appendChild(tbody);
 
+    // ── Native delegation — bind sekali di wrapper luar DataTables scope ──────
+    // Reliable di semua environment (VS Code Live Preview, Chrome, mobile)
+    const wrap = document.querySelector('.customer-table-wrap');
+    if (wrap) {
+      wrap.removeEventListener('click', _handleClick);
+      wrap.addEventListener('click', _handleClick);
+    }
+
     // ── DataTables init ──────────────────────────────────────────────────────
     if (typeof $ !== 'undefined' && $.fn && $.fn.DataTable) {
       dtInstance = $(tableEl).DataTable({
         pageLength: 25,
-        order:      [[0, 'asc']], // default: urutan ranking (#1 terbesar)
+        order:      [[0, 'asc']],
         language: {
           search:    'Cari:',
           lengthMenu:'Tampilkan _MENU_ baris',
@@ -164,40 +179,9 @@ const Table = (() => {
           { className: 'text-center', targets: [0, 10] },
           { className: 'row-arrow-col', targets: [11] },
         ],
-
-        // Re-attach click to every visible row after each draw (pagination, sort, search)
-        drawCallback: function () {
-          const api = this.api();
-          api.rows({ page: 'current' }).every(function () {
-            const rowNode = this.node();
-            if (!rowNode) return;
-            // Use jQuery one-time off+on to avoid stacking listeners
-            $(rowNode).off('click.modal').on('click.modal', function () {
-              _openModal(this.getAttribute('data-customer-id'));
-            });
-          });
-          console.log('[Table] drawCallback — rows on page:', api.rows({ page: 'current' }).count());
-        },
-      });
-
-      // Also add delegation on the wrapper as belt-and-suspenders fallback.
-      // NOTE: 'Modal' is accessed directly (not window.Modal) — const at global
-      // scope does NOT create a window property but IS a reachable global variable.
-      $(tableEl).off('click.modal-delegate').on('click.modal-delegate', 'tbody tr[data-customer-id]', function () {
-        _openModal(this.getAttribute('data-customer-id'));
       });
 
       _renderStatusFilter();
-      console.log('[Table] DataTables initialized on #customer-table');
-
-    } else {
-      // ── Plain JS fallback (no jQuery / no DataTables) ──────────────────────
-      console.log('[Table] DataTables not available — using plain JS delegation');
-      tableEl.addEventListener('click', function (e) {
-        const tr = e.target.closest('tr[data-customer-id]');
-        if (!tr) return;
-        _openModal(tr.getAttribute('data-customer-id'));
-      });
     }
   }
 

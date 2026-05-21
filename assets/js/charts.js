@@ -1,3 +1,35 @@
+// ─── Shared plugin: integer labels inside/above bar slices ────────────────────
+const BarLabelPlugin = {
+  id: 'barLabels',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    chart.data.datasets.forEach((dataset, di) => {
+      const meta = chart.getDatasetMeta(di);
+      if (meta.type !== 'bar') return;
+      meta.data.forEach((bar, index) => {
+        const value = dataset.data[index];
+        if (!value) return;
+        const barH = Math.abs(bar.base - bar.y);
+        if (barH < 8) return;
+        ctx.save();
+        ctx.font = 'bold 10px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.55)';
+        ctx.shadowBlur = 3;
+        if (barH >= 18) {
+          ctx.textBaseline = 'top';
+          ctx.fillText(value, bar.x, bar.y + 3);
+        } else {
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(value, bar.x, bar.y - 2);
+        }
+        ctx.restore();
+      });
+    });
+  },
+};
+
 // ─── Shared plugin: percentage labels inside donut slices ─────────────────────
 const DonutLabelPlugin = {
   id: 'donutPercentLabels',
@@ -132,8 +164,8 @@ const Charts = (() => {
     const canvas = document.getElementById('chart-gauge');
     if (!canvas) return;
 
-    const pct    = Math.min(achievement, 150);
-    const filled = (pct / 150) * 100;
+    const pct    = Math.min(achievement, 100);  // cap visual di 100% agar bar sejajar angka
+    const filled = pct;
     const color  = Fmt.achHex(achievement);
 
     instances.gauge = new Chart(canvas, {
@@ -328,7 +360,8 @@ const Charts = (() => {
           x: { grid: { color: t.gridColor }, ticks: { color: t.textColor } },
           y: { grid: { color: t.gridColor }, ticks: { color: t.textColor } },
         },
-      }
+      },
+      plugins: [BarLabelPlugin],
     });
   }
 

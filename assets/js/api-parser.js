@@ -141,7 +141,7 @@ const Parser = (() => {
         if (!dateRaw.match(/^\d{2}\/\d{2}\/\d{4}$/)) continue;
 
         const total = _parseRupiah(cols[6]);
-        if (total <= 0) continue;
+        if (total === 0) continue;
 
         const product  = (cols[4] || '').trim();
         const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';
@@ -177,7 +177,7 @@ const Parser = (() => {
         if (!dateRaw.match(/^\d{2}\/\d{2}\/\d{4}$/)) continue;
 
         const total = _parseRupiah(cols[21]);
-        if (total <= 0) continue;
+        if (total === 0) continue;
 
         const product  = (cols[16] || '').trim();
         const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';

@@ -1,7 +1,7 @@
 const Fmt = (() => {
   function _truncate(num, dec) {
     const f = Math.pow(10, dec);
-    return Math.trunc(num * f) / f;
+    return Math.round(num * f) / f;
   }
 
   function _idLocale(num, dec) {

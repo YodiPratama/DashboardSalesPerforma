@@ -3,7 +3,19 @@
     "allow": [
       "PowerShell(Get-ChildItem -Recurse -File | Where-Object { $_.Extension -in '.html','.js','.css' } | ForEach-Object { $_.FullName.Replace\\(\\(Get-Location\\).Path + '\\\\',''\\) } | Sort-Object)",
       "mcp__claude_ai_Google_Drive__search_files",
-      "mcp__claude_ai_Google_Drive__read_file_content"
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "PowerShell($env:PATH = $env:PATH + \";C:\\\\Program Files\\\\Git\\\\bin;C:\\\\Program Files\\\\Git\\\\cmd\"; git status)",
+      "PowerShell(\\(Get-Command git -ErrorAction SilentlyContinue\\).Source)",
+      "PowerShell(& \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.4.20\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\" -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" ls-files --error-unmatch ITEMSALE.TXT 2>&1)",
+      "PowerShell($LASTEXITCODE)",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; if \\(Test-Path $git\\) { & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" ls-files --error-unmatch ITEMSALE.TXT; Write-Host \"Exit: $LASTEXITCODE\" } else { Write-Host \"git not found at $git\" })",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" status; Write-Host \"---\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" diff --stat HEAD)",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" diff -- ITEMSALE.TXT)",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" log --oneline -5 -- ITEMSALE.TXT)",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" show --stat HEAD -- ITEMSALE.TXT; Write-Host \"---LAST COMMIT---\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" show 0914911 --name-only)",
+      "PowerShell($file = \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\ITEMSALE.TXT\"; $info = Get-Item $file; Write-Host \"Size: $\\($info.Length\\) bytes\"; Write-Host \"Last Modified: $\\($info.LastWriteTime\\)\"; \\(Get-Content $file | Measure-Object -Line\\).Lines | Write-Host)",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" diff --no-index --word-diff /dev/null ITEMSALE.TXT 2>&1 | Select-Object -First 5; Write-Host \"---\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" ls-files -s ITEMSALE.TXT)",
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; $hash = & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" hash-object \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\ITEMSALE.TXT\"; Write-Host \"Working file hash: $hash\"; Write-Host \"Index hash:        055464b7e3a62ba1f82388d80f6393c2e971271f\")"
     ]
   }
 }

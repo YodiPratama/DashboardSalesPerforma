@@ -27,6 +27,14 @@ const Parser = (() => {
     return parseFloat(cleaned) || 0;
   }
 
+  // Indonesian quantity string → number
+  // "1.000" → 1000 | "1,5" → 1.5 | "1.500,50" → 1500.5
+  function _parseQty(str) {
+    if (!str) return 0;
+    const cleaned = str.trim().replace(/\./g, '').replace(',', '.');
+    return parseFloat(cleaned) || 0;
+  }
+
   // DD/MM/YYYY → YYYY-MM-DD
   function _parseDate(str) {
     const parts = str.trim().split('/');
@@ -146,7 +154,7 @@ const Parser = (() => {
         const product  = (cols[4] || '').trim();
         const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';
         const price    = _parseRupiah(cols[5]);
-        const qty      = parseFloat((cols[3] || '0').trim().replace(',', '.')) || 0;
+        const qty      = _parseQty(cols[3]);
         const customerName = (cols[0] || '').trim();
         const customerId   = (cols[8] || '').trim();
 
@@ -182,7 +190,7 @@ const Parser = (() => {
         const product  = (cols[16] || '').trim();
         const category = kategoriMap.get(product.toUpperCase()) || 'Uncategorized';
         const price    = _parseRupiah(cols[18]);
-        const qty      = parseFloat((cols[15] || '0').trim().replace(',', '.')) || 0;
+        const qty      = _parseQty(cols[15]);
         const customerName = (cols[0] || '').trim();
         const customerId   = cols.length > 58 ? (cols[58] || '').trim() : '';
 

@@ -12,6 +12,120 @@
   <link rel="stylesheet" href="../assets/css/theme.css" />
   <link rel="stylesheet" href="../assets/css/main.css" />
   <link rel="stylesheet" href="../assets/css/dashboard.css" />
+  <style>
+  /* ── Product table: clickable rows ──── */
+  .prod-analytics-table tbody tr { cursor: pointer; }
+  .prod-analytics-table tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--accent-blue); }
+
+  /* ── Search input ──── */
+  .input-search {
+    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
+    color: var(--text-primary); border-radius: 7px;
+    padding: 5px 12px; font-size: 13px; outline: none; width: 200px;
+    font-family: inherit;
+  }
+  .input-search:focus { border-color: var(--accent-blue); }
+  .input-search::placeholder { color: var(--text-muted); }
+
+  /* ── Product Drill-down Modal ──── */
+  #pdm-overlay {
+    position: fixed; inset: 0; z-index: 1100;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  #pdm-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-muted);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    width: 100%; max-width: 980px;
+    max-height: 90vh;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  #pdm-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border-subtle); flex-shrink: 0;
+    gap: 12px;
+  }
+  #pdm-title { font-size: 17px; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
+  #pdm-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  #pdm-close-btn {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; margin-top: -2px;
+    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
+    color: var(--text-secondary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  #pdm-close-btn:hover { background: rgba(239,68,68,0.12); color: var(--accent-red); border-color: var(--accent-red); }
+  #pdm-filters {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 11px 22px; border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-secondary); flex-shrink: 0; font-size: 12px;
+  }
+  #pdm-filters label { color: var(--text-muted); font-weight: 500; }
+  .pdm-sep { color: var(--text-muted); }
+  #pdm-sm-info { color: var(--text-muted); margin-left: 4px; font-size: 11px; }
+  #pdm-summary {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    padding: 12px 22px; border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+  }
+  .pdm-kpi {
+    flex: 1; min-width: 100px;
+    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
+    border-radius: 10px; padding: 10px 14px;
+  }
+  .pdm-kpi-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+  .pdm-kpi-value { font-size: 17px; font-weight: 700; color: var(--text-primary); margin-top: 4px; }
+  #pdm-tabs {
+    display: flex; padding: 0 22px;
+    border-bottom: 1px solid var(--border-subtle); flex-shrink: 0;
+  }
+  .pdm-tab-btn {
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    padding: 10px 18px; font-size: 13px; font-weight: 600;
+    color: var(--text-muted); border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .pdm-tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+  .pdm-tab-btn:hover:not(.active) { color: var(--text-primary); }
+  #pdm-body { flex: 1; overflow-y: auto; }
+  #pdm-body table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  #pdm-body thead th {
+    position: sticky; top: 0; z-index: 2;
+    padding: 9px 14px; background: var(--bg-secondary);
+    color: var(--text-muted); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border-subtle); white-space: nowrap;
+    text-align: left;
+  }
+  #pdm-body thead th.text-right { text-align: right; }
+  #pdm-body tbody td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary); vertical-align: middle;
+  }
+  #pdm-body tbody tr:last-child td { border-bottom: none; }
+  #pdm-body tbody tr:hover td { background: var(--bg-card-hover); }
+  #pdm-footer {
+    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    padding: 12px 22px; border-top: 1px solid var(--border-subtle);
+    flex-shrink: 0; background: var(--bg-secondary);
+  }
+  #pdm-row-count { font-size: 12px; color: var(--text-muted); margin-right: auto; }
+  @media (max-width: 700px) {
+    #pdm-box { max-height: 95vh; border-radius: 12px; }
+    #pdm-header { padding: 12px 14px 10px; }
+    #pdm-title { font-size: 14px; }
+    #pdm-filters, #pdm-summary { padding: 9px 14px; }
+    #pdm-tabs { padding: 0 14px; }
+    #pdm-body thead th, #pdm-body tbody td { padding: 8px 10px; font-size: 11px; }
+    #pdm-footer { padding: 10px 14px; }
+  }
+  </style>
 </head>
 <body>
 <div id="loading-overlay"><div style="text-align:center"><div class="spinner" style="margin:0 auto 12px"></div><div class="loading-text">Memuat data…</div></div></div>
@@ -66,6 +180,39 @@
         <div class="cat-grid" id="cat-cards"></div>
       </div>
 
+      <!-- Product Analytics Table -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title" style="display:flex;align-items:center;gap:8px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Analitik Produk
+            <span class="count-badge" id="prod-count">0</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-size:11px;color:var(--text-muted)">Klik baris untuk detail transaksi</span>
+            <input type="text" id="prod-search" class="input-search" placeholder="Cari nama produk…" />
+          </div>
+        </div>
+        <div class="panel-body" style="padding:0;overflow-x:auto;max-height:460px">
+          <table class="prod-analytics-table">
+            <thead>
+              <tr>
+                <th style="width:36px;text-align:center">#</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th class="text-right">Sales</th>
+                <th class="text-right">TX</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Customer</th>
+                <th class="text-right">Avg/TX</th>
+                <th class="text-right">Tgl. Terakhir</th>
+              </tr>
+            </thead>
+            <tbody id="prod-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Uncategorized Panel -->
       <div class="panel">
         <div class="panel-header">
@@ -82,6 +229,44 @@
         <div class="panel-body" id="uncat-list"><div class="no-alert">Memuat data…</div></div>
       </div>
     </main>
+  </div>
+</div>
+
+<!-- Product Drill-down Modal -->
+<div id="pdm-overlay" style="display:none">
+  <div id="pdm-box">
+    <div id="pdm-header">
+      <div>
+        <div id="pdm-title">—</div>
+        <div id="pdm-subtitle">—</div>
+      </div>
+      <button id="pdm-close-btn" title="Tutup (Esc)">✕</button>
+    </div>
+    <div id="pdm-filters">
+      <label>Periode:</label>
+      <select class="select-control" id="pdm-from" style="height:28px;font-size:12px;padding:0 8px"></select>
+      <span class="pdm-sep">s/d</span>
+      <select class="select-control" id="pdm-to" style="height:28px;font-size:12px;padding:0 8px"></select>
+      <span id="pdm-sm-info"></span>
+    </div>
+    <div id="pdm-summary">
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Total TX</div><div class="pdm-kpi-value" id="pdm-kpi-tx">0</div></div>
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Total Qty</div><div class="pdm-kpi-value" id="pdm-kpi-qty">0</div></div>
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Total Value</div><div class="pdm-kpi-value" id="pdm-kpi-val">0</div></div>
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Customer Unik</div><div class="pdm-kpi-value" id="pdm-kpi-custs">0</div></div>
+    </div>
+    <div id="pdm-tabs">
+      <button class="pdm-tab-btn active" data-tab="customer">Per Customer</button>
+      <button class="pdm-tab-btn" data-tab="transaksi">Per Transaksi</button>
+    </div>
+    <div id="pdm-body"></div>
+    <div id="pdm-footer">
+      <span id="pdm-row-count"></span>
+      <button class="btn" id="pdm-export-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Export Excel
+      </button>
+    </div>
   </div>
 </div>
 
@@ -158,7 +343,6 @@ function _renderCards(cats, rawData, filters) {
 
 function _renderCharts(cats) {
   const t = Theme.getChartDefaults();
-
   if (_catDonut) _catDonut.destroy();
   const c1 = document.getElementById('chart-cat-donut');
   _catDonut = new Chart(c1, {
@@ -167,7 +351,6 @@ function _renderCharts(cats) {
     options: { responsive:true, maintainAspectRatio:false, cutout:'65%',
       plugins:{ legend:{position:'right',labels:{color:t.textColor,usePointStyle:true}}, tooltip:{backgroundColor:t.tooltipBg,titleColor:t.tooltipText,bodyColor:t.tooltipText,callbacks:{label:ctx=>`  ${ctx.label}: ${Fmt.currency(ctx.raw)}`}} } }
   });
-
   if (_catBar) _catBar.destroy();
   const c2 = document.getElementById('chart-cat-bar');
   _catBar = new Chart(c2, {
@@ -179,6 +362,253 @@ function _renderCharts(cats) {
   });
 }
 
+// ─── Product Analytics Table ───────────────────────────────────────────────
+function _calcProductMetrics(raw, filters) {
+  const sales = raw.sales.filter(s => {
+    const d = new Date(s.date);
+    if (d.getFullYear() !== filters.year || d.getMonth()+1 !== filters.month) return false;
+    if (filters.salesman !== 'all' && s.salesman_id !== filters.salesman) return false;
+    return true;
+  });
+  const map = {};
+  sales.forEach(s => {
+    if (!map[s.product]) map[s.product] = { product:s.product, category:s.category||'—', sales:0, qty:0, invs:new Set(), custs:new Set(), lastDate:'' };
+    const p = map[s.product];
+    p.sales += s.total; p.qty += (s.qty||0);
+    p.invs.add(s.invoice); p.custs.add(s.customer_id);
+    if (!p.lastDate || s.date > p.lastDate) p.lastDate = s.date;
+  });
+  return Object.values(map).map(p => ({
+    product:p.product, category:p.category, sales:p.sales, qty:p.qty,
+    tx:p.invs.size, custs:p.custs.size,
+    avgTx:p.invs.size ? p.sales/p.invs.size : 0, lastDate:p.lastDate,
+  })).sort((a,b) => b.sales - a.sales);
+}
+
+function _renderProductTable(raw, filters) {
+  const tbody = document.getElementById('prod-tbody');
+  const countEl = document.getElementById('prod-count');
+  if (!tbody) return;
+  const cats = Analytics.calcCategoryMetrics(raw, filters);
+  const colorMap = {};
+  cats.forEach(c => { colorMap[c.name] = c.color; });
+  const products = _calcProductMetrics(raw, filters);
+  if (countEl) countEl.textContent = products.length;
+  tbody.innerHTML = products.length ? products.map((p, i) => {
+    const dot = colorMap[p.category] || '#64748b';
+    const pName = p.product.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return `<tr class="prod-row" data-product="${pName}">
+      <td style="text-align:center;color:var(--text-muted);font-size:12px;font-weight:600">${i+1}</td>
+      <td class="prod-cell-name">${p.product}</td>
+      <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
+        <span style="width:8px;height:8px;border-radius:50%;background:${dot};flex-shrink:0"></span>${p.category}
+      </span></td>
+      <td class="text-right" style="font-weight:700;color:var(--accent-blue)">${Fmt.currency(p.sales)}</td>
+      <td class="text-right">${Fmt.number(p.tx)}</td>
+      <td class="text-right">${Fmt.number(p.qty)}</td>
+      <td class="text-right">${Fmt.number(p.custs)}</td>
+      <td class="text-right" style="color:var(--text-secondary)">${Fmt.currency(p.avgTx)}</td>
+      <td class="text-right" style="color:var(--text-muted);font-size:12px">${Fmt.date(p.lastDate)}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted)">Tidak ada data produk bulan ini</td></tr>';
+
+  const search = document.getElementById('prod-search');
+  if (search) {
+    search.value = '';
+    search.oninput = () => {
+      const q = search.value.toLowerCase();
+      tbody.querySelectorAll('.prod-row').forEach(row => {
+        row.style.display = (!q || row.dataset.product.toLowerCase().includes(q)) ? '' : 'none';
+      });
+    };
+  }
+  tbody.querySelectorAll('.prod-row').forEach(row => {
+    row.onclick = () => _openProductModal(row.dataset.product);
+  });
+}
+
+// ─── Product Drill-down Modal ──────────────────────────────────────────────
+let _pdmProduct  = null;
+let _pdmActiveTab = 'customer';
+let _pdmSales    = [];
+
+function _pdmPopulateMonths(defaultYear, defaultMonth) {
+  const fromSel = document.getElementById('pdm-from');
+  const toSel   = document.getElementById('pdm-to');
+  fromSel.innerHTML = toSel.innerHTML = '';
+  const now = new Date();
+  for (let i = 0; i < 18; i++) {
+    let m = now.getMonth()+1-i, y = now.getFullYear();
+    while (m <= 0) { m += 12; y--; }
+    const val   = `${y}-${String(m).padStart(2,'0')}`;
+    const label = `${CONFIG.MONTHS_ID[m-1]} ${y}`;
+    const sel   = (y === defaultYear && m === defaultMonth);
+    fromSel.appendChild(new Option(label, val, false, sel));
+    toSel.appendChild(new Option(label, val, false, sel));
+  }
+}
+
+function _openProductModal(productName) {
+  _pdmProduct   = productName;
+  _pdmActiveTab = 'customer';
+  document.getElementById('pdm-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('pdm-title').textContent = productName;
+
+  const [py, pm] = document.getElementById('filter-month').value.split('-').map(Number);
+  _pdmPopulateMonths(py, pm);
+
+  const smSel = document.getElementById('filter-salesman');
+  document.getElementById('pdm-sm-info').textContent = '· ' + smSel.options[smSel.selectedIndex].textContent;
+
+  document.querySelectorAll('.pdm-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'customer'));
+  _pdmRender();
+}
+
+function _pdmGetRange() {
+  const f = document.getElementById('pdm-from').value.split('-').map(Number);
+  const t = document.getElementById('pdm-to').value.split('-').map(Number);
+  return { yFrom:f[0], mFrom:f[1], yTo:t[0], mTo:t[1] };
+}
+
+function _pdmFilterSales() {
+  if (!_pdmProduct || !_pageRawData) return [];
+  const { yFrom, mFrom, yTo, mTo } = _pdmGetRange();
+  const fromNum = yFrom*100 + mFrom;
+  const toNum   = yTo*100 + mTo;
+  const smVal   = document.getElementById('filter-salesman').value;
+  return _pageRawData.sales.filter(s => {
+    if (s.product !== _pdmProduct) return false;
+    const d    = new Date(s.date);
+    const sNum = d.getFullYear()*100 + (d.getMonth()+1);
+    if (sNum < fromNum || sNum > toNum) return false;
+    if (smVal !== 'all' && s.salesman_id !== smVal) return false;
+    return true;
+  });
+}
+
+function _pdmRender() {
+  const sales = _pdmFilterSales();
+  _pdmSales = sales;
+
+  const { yFrom, mFrom, yTo, mTo } = _pdmGetRange();
+  const fromLbl = `${CONFIG.MONTHS_ID[mFrom-1]} ${yFrom}`;
+  const toLbl   = `${CONFIG.MONTHS_ID[mTo-1]} ${yTo}`;
+  const period  = fromLbl === toLbl ? fromLbl : `${fromLbl} – ${toLbl}`;
+
+  const sample = _pageRawData.sales.find(s => s.product === _pdmProduct);
+  const cat    = sample ? (sample.category || '—') : '—';
+  document.getElementById('pdm-subtitle').textContent = `${cat} · ${period}`;
+
+  const invSet  = new Set(sales.map(s => s.invoice));
+  const custSet = new Set(sales.map(s => s.customer_id));
+  const totQty  = sales.reduce((a,s) => a+(s.qty||0), 0);
+  const totVal  = sales.reduce((a,s) => a+s.total, 0);
+  document.getElementById('pdm-kpi-tx').textContent    = Fmt.number(invSet.size);
+  document.getElementById('pdm-kpi-qty').textContent   = Fmt.number(totQty);
+  document.getElementById('pdm-kpi-val').textContent   = Fmt.currency(totVal);
+  document.getElementById('pdm-kpi-custs').textContent = Fmt.number(custSet.size);
+
+  _pdmRenderTab(_pdmActiveTab, sales);
+}
+
+function _pdmRenderTab(tab, sales) {
+  const body = document.getElementById('pdm-body');
+  if (tab === 'customer') {
+    const map = {};
+    sales.forEach(s => {
+      const key = s.customer_id || s.customer;
+      if (!map[key]) map[key] = { customer:s.customer||key, salesman:s.salesman, invs:new Set(), qty:0, val:0 };
+      map[key].invs.add(s.invoice);
+      map[key].qty += (s.qty||0);
+      map[key].val += s.total;
+    });
+    const rows = Object.values(map).sort((a,b) => b.val - a.val);
+    document.getElementById('pdm-row-count').textContent = `${rows.length} customer`;
+    body.innerHTML = `<table>
+      <thead><tr>
+        <th style="width:36px;text-align:center">#</th>
+        <th>Customer</th><th>Salesman</th>
+        <th class="text-right">TX</th><th class="text-right">Qty</th>
+        <th class="text-right">Total Value</th><th class="text-right">Avg/TX</th>
+      </tr></thead>
+      <tbody>${rows.length ? rows.map((r,i) => `
+        <tr>
+          <td style="text-align:center;color:var(--text-muted);font-size:12px">${i+1}</td>
+          <td style="font-weight:600">${r.customer}</td>
+          <td style="color:var(--text-secondary);font-size:12px">${r.salesman}</td>
+          <td class="text-right">${Fmt.number(r.invs.size)}</td>
+          <td class="text-right">${Fmt.number(r.qty)}</td>
+          <td class="text-right" style="font-weight:700;color:var(--accent-blue)">${Fmt.currency(r.val)}</td>
+          <td class="text-right" style="color:var(--text-secondary)">${Fmt.currency(r.invs.size ? r.val/r.invs.size : 0)}</td>
+        </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data untuk periode ini</td></tr>'}
+      </tbody></table>`;
+  } else {
+    const rows = [...sales].sort((a,b) => b.date.localeCompare(a.date));
+    document.getElementById('pdm-row-count').textContent = `${rows.length} transaksi`;
+    body.innerHTML = `<table>
+      <thead><tr>
+        <th style="width:36px;text-align:center">#</th>
+        <th>Tanggal</th><th>No. Invoice</th>
+        <th>Customer</th><th>Salesman</th>
+        <th class="text-right">Qty</th><th class="text-right">Value</th>
+      </tr></thead>
+      <tbody>${rows.length ? rows.map((r,i) => `
+        <tr>
+          <td style="text-align:center;color:var(--text-muted);font-size:12px">${i+1}</td>
+          <td style="font-size:12px;color:var(--text-secondary);white-space:nowrap">${Fmt.date(r.date)}</td>
+          <td style="font-size:11px;font-family:monospace;color:var(--text-muted);white-space:nowrap">${r.invoice}</td>
+          <td style="font-weight:600">${r.customer}</td>
+          <td style="color:var(--text-secondary);font-size:12px">${r.salesman}</td>
+          <td class="text-right">${Fmt.number(r.qty||0)}</td>
+          <td class="text-right" style="font-weight:700;color:var(--accent-blue)">${Fmt.currency(r.total)}</td>
+        </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data untuk periode ini</td></tr>'}
+      </tbody></table>`;
+  }
+}
+
+function _pdmClose() {
+  document.getElementById('pdm-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function _pdmExport() {
+  if (!_pdmSales.length) return;
+  const { yFrom, mFrom, yTo, mTo } = _pdmGetRange();
+  const fromLbl = `${CONFIG.MONTHS_ID[mFrom-1]}${yFrom}`;
+  const toLbl   = `${CONFIG.MONTHS_ID[mTo-1]}${yTo}`;
+  const range   = fromLbl === toLbl ? fromLbl : `${fromLbl}_sd_${toLbl}`;
+  const wb      = XLSX.utils.book_new();
+
+  // Sheet 1: Per Customer
+  const custMap = {};
+  _pdmSales.forEach(s => {
+    const key = s.customer_id || s.customer;
+    if (!custMap[key]) custMap[key] = { Customer:s.customer||key, Salesman:s.salesman, invs:new Set(), Qty:0, Value:0 };
+    custMap[key].invs.add(s.invoice);
+    custMap[key].Qty   += (s.qty||0);
+    custMap[key].Value += s.total;
+  });
+  const custRows = Object.values(custMap).sort((a,b) => b.Value - a.Value).map(r => ({
+    Customer:r.Customer, Salesman:r.Salesman, TX:r.invs.size,
+    Qty:r.Qty, 'Total Value':r.Value,
+    'Avg per TX': r.invs.size ? r.Value/r.invs.size : 0,
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(custRows), 'Per Customer');
+
+  // Sheet 2: Per Transaksi
+  const txRows = [..._pdmSales].sort((a,b) => b.date.localeCompare(a.date)).map(s => ({
+    Tanggal:Fmt.date(s.date), 'No. Invoice':s.invoice,
+    Customer:s.customer, Salesman:s.salesman,
+    Qty:s.qty||0, Value:s.total,
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(txRows), 'Per Transaksi');
+
+  const safeName = (_pdmProduct||'Produk').replace(/[\\/:*?"<>|]/g,'_').substring(0,25);
+  XLSX.writeFile(wb, `${safeName}_${range}.xlsx`);
+}
+
+// ─── Main render ──────────────────────────────────────────────────────────
 async function render() {
   document.getElementById('loading-overlay').style.display = 'flex';
   try {
@@ -188,11 +618,12 @@ async function render() {
     const filters = { year:y, month:m, salesman:smVal, category:'all' };
     document.getElementById('page-month-label').textContent = Fmt.monthLabel(y,m);
 
-    const cats = Analytics.calcCategoryMetrics(_pageRawData, filters);
+    const cats  = Analytics.calcCategoryMetrics(_pageRawData, filters);
     const uncat = Analytics.calcUncategorized(_pageRawData, filters);
 
     _renderCards(cats, _pageRawData, filters);
     _renderCharts(cats);
+    _renderProductTable(_pageRawData, filters);
     Alerts.renderUncategorized(uncat);
     Alerts.setupCopyButton(uncat);
   } finally {
@@ -204,6 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Theme.init();
   _populateMonth();
   _populateSalesman();
+
   document.getElementById('filter-month').addEventListener('change', render);
   document.getElementById('filter-salesman').addEventListener('change', render);
   document.getElementById('btn-refresh').addEventListener('click', () => { _pageRawData = null; render(); });
@@ -220,6 +652,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('sidebar-toggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
   document.addEventListener('themechange', () => { if (_pageRawData) render(); });
+
+  // Modal events
+  document.getElementById('pdm-close-btn').addEventListener('click', _pdmClose);
+  document.getElementById('pdm-overlay').addEventListener('click', e => { if (e.target.id === 'pdm-overlay') _pdmClose(); });
+  document.getElementById('pdm-from').addEventListener('change', _pdmRender);
+  document.getElementById('pdm-to').addEventListener('change', _pdmRender);
+  document.getElementById('pdm-export-btn').addEventListener('click', _pdmExport);
+  document.querySelectorAll('.pdm-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _pdmActiveTab = btn.dataset.tab;
+      document.querySelectorAll('.pdm-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      _pdmRenderTab(_pdmActiveTab, _pdmSales);
+    });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') _pdmClose(); });
+
   render();
 });
 </script>

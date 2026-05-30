@@ -452,6 +452,7 @@ const App = (() => {
     _bindSidebar();
     _bindKPICards();
     Modal.init();
+    CategorySection.setupModal();
     SectionManager.init();
 
     document.addEventListener('themechange', () => { if (AppState.rawData) render(); });

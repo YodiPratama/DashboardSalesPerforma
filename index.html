@@ -792,6 +792,44 @@
 </div>
 
 <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
+<!-- Product Drill-down Modal -->
+<div id="pdm-overlay" style="display:none">
+  <div id="pdm-box">
+    <div id="pdm-header">
+      <div>
+        <div id="pdm-title">—</div>
+        <div id="pdm-subtitle">—</div>
+      </div>
+      <button id="pdm-close-btn" title="Tutup (Esc)">✕</button>
+    </div>
+    <div id="pdm-filters">
+      <label>Periode:</label>
+      <select class="select-control" id="pdm-from" style="height:28px;font-size:12px;padding:0 8px"></select>
+      <span class="pdm-sep">s/d</span>
+      <select class="select-control" id="pdm-to" style="height:28px;font-size:12px;padding:0 8px"></select>
+      <span id="pdm-sm-info"></span>
+    </div>
+    <div id="pdm-summary">
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Total TX</div><div class="pdm-kpi-value" id="pdm-kpi-tx">0</div></div>
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Total Qty</div><div class="pdm-kpi-value" id="pdm-kpi-qty">0</div></div>
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Total Value</div><div class="pdm-kpi-value" id="pdm-kpi-val">0</div></div>
+      <div class="pdm-kpi"><div class="pdm-kpi-label">Customer Unik</div><div class="pdm-kpi-value" id="pdm-kpi-custs">0</div></div>
+    </div>
+    <div id="pdm-tabs">
+      <button class="pdm-tab-btn active" data-tab="customer">Per Customer</button>
+      <button class="pdm-tab-btn" data-tab="transaksi">Per Transaksi</button>
+    </div>
+    <div id="pdm-body"></div>
+    <div id="pdm-footer">
+      <span id="pdm-row-count"></span>
+      <button class="btn" id="pdm-export-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Export Excel
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="config/config.js"></script>
 <script src="assets/js/formatter.js"></script>
 <script src="assets/js/theme.js"></script>

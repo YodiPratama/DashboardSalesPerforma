@@ -1,6 +1,15 @@
 const CategorySection = (() => {
   let _catDonut = null, _catBar = null;
 
+  // Stored per render() call — used by modal
+  let _rawData  = null;
+  let _smFilter = 'all';
+
+  // Modal state
+  let _pdmProduct   = null;
+  let _pdmActiveTab = 'customer';
+  let _pdmSales     = [];
+
   function _getProductsForCategory(raw, filters, catName) {
     const sales = raw.sales.filter(s => {
       const d = new Date(s.date);
@@ -91,7 +100,7 @@ const CategorySection = (() => {
   }
 
   function _renderProductTable(raw, filters) {
-    const tbody = document.getElementById('prod-analytics-body');
+    const tbody   = document.getElementById('prod-analytics-body');
     const countEl = document.getElementById('prod-analytics-count');
     if (!tbody) return;
 
@@ -103,8 +112,9 @@ const CategorySection = (() => {
     if (countEl) countEl.textContent = products.length;
 
     tbody.innerHTML = products.length ? products.map((p, i) => {
-      const dot = colorMap[p.category] || '#64748b';
-      return `<tr class="prod-row" data-name="${p.product.toLowerCase()}">
+      const dot   = colorMap[p.category] || '#64748b';
+      const pName = p.product.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return `<tr class="prod-row" data-product="${pName}" style="cursor:pointer">
         <td class="text-center" style="color:var(--text-muted);font-size:12px;font-weight:600">${i + 1}</td>
         <td class="prod-cell-name">${p.product}</td>
         <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap">
@@ -125,10 +135,227 @@ const CategorySection = (() => {
       search.oninput = () => {
         const q = search.value.toLowerCase();
         tbody.querySelectorAll('.prod-row').forEach(row => {
-          row.style.display = !q || row.dataset.name.includes(q) ? '' : 'none';
+          row.style.display = !q || row.dataset.product.toLowerCase().includes(q) ? '' : 'none';
         });
       };
     }
+
+    tbody.querySelectorAll('.prod-row').forEach(row => {
+      row.onclick = () => _pdmOpen(row.dataset.product);
+    });
+  }
+
+  // ─── Product Drill-down Modal ─────────────────────────────────────────────
+  function _pdmPopulateMonths(defaultYear, defaultMonth) {
+    const fromSel = document.getElementById('pdm-from');
+    const toSel   = document.getElementById('pdm-to');
+    if (!fromSel || !toSel) return;
+    fromSel.innerHTML = toSel.innerHTML = '';
+    const now = new Date();
+    for (let i = 0; i < 18; i++) {
+      let m = now.getMonth()+1-i, y = now.getFullYear();
+      while (m <= 0) { m += 12; y--; }
+      const val   = `${y}-${String(m).padStart(2,'0')}`;
+      const label = `${CONFIG.MONTHS_ID[m-1]} ${y}`;
+      const sel   = (y === defaultYear && m === defaultMonth);
+      fromSel.appendChild(new Option(label, val, false, sel));
+      toSel.appendChild(new Option(label, val, false, sel));
+    }
+  }
+
+  function _pdmOpen(productName) {
+    if (!_rawData) return;
+    _pdmProduct   = productName;
+    _pdmActiveTab = 'customer';
+
+    const overlay = document.getElementById('pdm-overlay');
+    if (!overlay) return;
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    document.getElementById('pdm-title').textContent = productName;
+
+    // Default period = current AppState month
+    const y = AppState.filters.year;
+    const m = AppState.filters.month;
+    _pdmPopulateMonths(y, m);
+
+    // Salesman info
+    const smSel = document.getElementById('filter-salesman');
+    const smTxt = smSel ? smSel.options[smSel.selectedIndex].textContent : '';
+    document.getElementById('pdm-sm-info').textContent = smTxt ? '· ' + smTxt : '';
+
+    document.querySelectorAll('.pdm-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'customer'));
+    _pdmRender();
+  }
+
+  function _pdmGetRange() {
+    const f = (document.getElementById('pdm-from')?.value || '').split('-').map(Number);
+    const t = (document.getElementById('pdm-to')?.value || '').split('-').map(Number);
+    return { yFrom:f[0]||0, mFrom:f[1]||0, yTo:t[0]||0, mTo:t[1]||0 };
+  }
+
+  function _pdmFilterSales() {
+    if (!_pdmProduct || !_rawData) return [];
+    const { yFrom, mFrom, yTo, mTo } = _pdmGetRange();
+    const fromNum = yFrom*100 + mFrom;
+    const toNum   = yTo*100 + mTo;
+    return _rawData.sales.filter(s => {
+      if (s.product !== _pdmProduct) return false;
+      const d    = new Date(s.date);
+      const sNum = d.getFullYear()*100 + (d.getMonth()+1);
+      if (sNum < fromNum || sNum > toNum) return false;
+      if (_smFilter !== 'all' && s.salesman_id !== _smFilter) return false;
+      return true;
+    });
+  }
+
+  function _pdmRender() {
+    const sales = _pdmFilterSales();
+    _pdmSales = sales;
+
+    const { yFrom, mFrom, yTo, mTo } = _pdmGetRange();
+    const fromLbl = `${CONFIG.MONTHS_ID[mFrom-1]} ${yFrom}`;
+    const toLbl   = `${CONFIG.MONTHS_ID[mTo-1]} ${yTo}`;
+    const period  = fromLbl === toLbl ? fromLbl : `${fromLbl} – ${toLbl}`;
+
+    const sample = _rawData.sales.find(s => s.product === _pdmProduct);
+    const cat    = sample ? (sample.category || '—') : '—';
+    document.getElementById('pdm-subtitle').textContent = `${cat} · ${period}`;
+
+    const invSet  = new Set(sales.map(s => s.invoice));
+    const custSet = new Set(sales.map(s => s.customer_id));
+    const totQty  = sales.reduce((a,s) => a+(s.qty||0), 0);
+    const totVal  = sales.reduce((a,s) => a+s.total, 0);
+    document.getElementById('pdm-kpi-tx').textContent    = Fmt.number(invSet.size);
+    document.getElementById('pdm-kpi-qty').textContent   = Fmt.number(totQty);
+    document.getElementById('pdm-kpi-val').textContent   = Fmt.currency(totVal);
+    document.getElementById('pdm-kpi-custs').textContent = Fmt.number(custSet.size);
+
+    _pdmRenderTab(_pdmActiveTab, sales);
+  }
+
+  function _pdmRenderTab(tab, sales) {
+    const body = document.getElementById('pdm-body');
+    if (!body) return;
+    if (tab === 'customer') {
+      const map = {};
+      sales.forEach(s => {
+        const key = s.customer_id || s.customer;
+        if (!map[key]) map[key] = { customer:s.customer||key, salesman:s.salesman, invs:new Set(), qty:0, val:0 };
+        map[key].invs.add(s.invoice);
+        map[key].qty += (s.qty||0);
+        map[key].val += s.total;
+      });
+      const rows = Object.values(map).sort((a,b) => b.val - a.val);
+      document.getElementById('pdm-row-count').textContent = `${rows.length} customer`;
+      body.innerHTML = `<table>
+        <thead><tr>
+          <th style="width:36px;text-align:center">#</th>
+          <th>Customer</th><th>Salesman</th>
+          <th class="text-right">TX</th><th class="text-right">Qty</th>
+          <th class="text-right">Total Value</th><th class="text-right">Avg/TX</th>
+        </tr></thead>
+        <tbody>${rows.length ? rows.map((r,i) => `
+          <tr>
+            <td style="text-align:center;color:var(--text-muted);font-size:12px">${i+1}</td>
+            <td style="font-weight:600">${r.customer}</td>
+            <td style="color:var(--text-secondary);font-size:12px">${r.salesman}</td>
+            <td class="text-right">${Fmt.number(r.invs.size)}</td>
+            <td class="text-right">${Fmt.number(r.qty)}</td>
+            <td class="text-right" style="font-weight:700;color:var(--accent-blue)">${Fmt.currency(r.val)}</td>
+            <td class="text-right" style="color:var(--text-secondary)">${Fmt.currency(r.invs.size ? r.val/r.invs.size : 0)}</td>
+          </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data untuk periode ini</td></tr>'}
+        </tbody></table>`;
+    } else {
+      const rows = [...sales].sort((a,b) => b.date.localeCompare(a.date));
+      document.getElementById('pdm-row-count').textContent = `${rows.length} transaksi`;
+      body.innerHTML = `<table>
+        <thead><tr>
+          <th style="width:36px;text-align:center">#</th>
+          <th>Tanggal</th><th>No. Invoice</th>
+          <th>Customer</th><th>Salesman</th>
+          <th class="text-right">Qty</th><th class="text-right">Value</th>
+        </tr></thead>
+        <tbody>${rows.length ? rows.map((r,i) => `
+          <tr>
+            <td style="text-align:center;color:var(--text-muted);font-size:12px">${i+1}</td>
+            <td style="font-size:12px;color:var(--text-secondary);white-space:nowrap">${Fmt.date(r.date)}</td>
+            <td style="font-size:11px;font-family:monospace;color:var(--text-muted);white-space:nowrap">${r.invoice}</td>
+            <td style="font-weight:600">${r.customer}</td>
+            <td style="color:var(--text-secondary);font-size:12px">${r.salesman}</td>
+            <td class="text-right">${Fmt.number(r.qty||0)}</td>
+            <td class="text-right" style="font-weight:700;color:var(--accent-blue)">${Fmt.currency(r.total)}</td>
+          </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data untuk periode ini</td></tr>'}
+        </tbody></table>`;
+    }
+  }
+
+  function _pdmClose() {
+    const overlay = document.getElementById('pdm-overlay');
+    if (overlay) overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function _pdmExport() {
+    if (!_pdmSales.length) return;
+    const { yFrom, mFrom, yTo, mTo } = _pdmGetRange();
+    const fromLbl = `${CONFIG.MONTHS_ID[mFrom-1]}${yFrom}`;
+    const toLbl   = `${CONFIG.MONTHS_ID[mTo-1]}${yTo}`;
+    const range   = fromLbl === toLbl ? fromLbl : `${fromLbl}_sd_${toLbl}`;
+    const wb      = XLSX.utils.book_new();
+
+    // Sheet 1: Per Customer
+    const custMap = {};
+    _pdmSales.forEach(s => {
+      const key = s.customer_id || s.customer;
+      if (!custMap[key]) custMap[key] = { Customer:s.customer||key, Salesman:s.salesman, invs:new Set(), Qty:0, Value:0 };
+      custMap[key].invs.add(s.invoice);
+      custMap[key].Qty   += (s.qty||0);
+      custMap[key].Value += s.total;
+    });
+    const custRows = Object.values(custMap).sort((a,b) => b.Value - a.Value).map(r => ({
+      Customer:r.Customer, Salesman:r.Salesman, TX:r.invs.size,
+      Qty:r.Qty, 'Total Value':r.Value,
+      'Avg per TX': r.invs.size ? r.Value/r.invs.size : 0,
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(custRows), 'Per Customer');
+
+    // Sheet 2: Per Transaksi
+    const txRows = [..._pdmSales].sort((a,b) => b.date.localeCompare(a.date)).map(s => ({
+      Tanggal:Fmt.date(s.date), 'No. Invoice':s.invoice,
+      Customer:s.customer, Salesman:s.salesman,
+      Qty:s.qty||0, Value:s.total,
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(txRows), 'Per Transaksi');
+
+    const safeName = (_pdmProduct||'Produk').replace(/[\\/:*?"<>|]/g,'_').substring(0,25);
+    XLSX.writeFile(wb, `${safeName}_${range}.xlsx`);
+  }
+
+  function setupModal() {
+    const overlay   = document.getElementById('pdm-overlay');
+    const closeBtn  = document.getElementById('pdm-close-btn');
+    const fromSel   = document.getElementById('pdm-from');
+    const toSel     = document.getElementById('pdm-to');
+    const exportBtn = document.getElementById('pdm-export-btn');
+    if (!overlay) return;
+
+    closeBtn?.addEventListener('click', _pdmClose);
+    overlay.addEventListener('click', e => { if (e.target.id === 'pdm-overlay') _pdmClose(); });
+    fromSel?.addEventListener('change', _pdmRender);
+    toSel?.addEventListener('change', _pdmRender);
+    exportBtn?.addEventListener('click', _pdmExport);
+
+    document.querySelectorAll('.pdm-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _pdmActiveTab = btn.dataset.tab;
+        document.querySelectorAll('.pdm-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        _pdmRenderTab(_pdmActiveTab, _pdmSales);
+      });
+    });
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.style.display !== 'none') _pdmClose(); });
   }
 
   function _renderUncategorized(uncat) {
@@ -165,6 +392,9 @@ const CategorySection = (() => {
   }
 
   function render(raw, filters) {
+    _rawData  = raw;
+    _smFilter = filters.salesman || 'all';
+
     const cats  = Analytics.calcCategoryMetrics(raw, filters);
     const uncat = Analytics.calcUncategorized(raw, filters);
     _renderCards(cats, raw, filters);
@@ -183,5 +413,5 @@ const CategorySection = (() => {
     XLSX.writeFile(wb, `Category_${filters.year}_${String(filters.month).padStart(2, '0')}.xlsx`);
   }
 
-  return { render, exportExcel };
+  return { render, exportExcel, setupModal };
 })();

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" -Force | Where-Object { $_.Name -notmatch '^\\\\.' -or $_.Name -eq '.gitignore' } | Select-Object Name, PSIsContainer | Format-Table)",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\docs\")",
+      "PowerShell(Move-Item \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\architecture.md\" \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\docs\\\\architecture.md\")"
+    ]
+  }
+}

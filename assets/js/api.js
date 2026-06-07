@@ -238,18 +238,17 @@ const API = (() => {
     return res.json();
   }
 
-  // ─── Fetch ITEMSALE.TXT dari GitHub + Kategori/Target dari Sheets ────────
-  // ITEMSALE.TXT: format tab-separated asli MYOB (60+ kolom)
-  // Kategori + Target: format CSV compact dari Google Sheets
+  // ─── Fetch semua data dari GitHub repo ───────────────────────────────────────
+  // ITEMSALE.TXT: tab-separated MYOB | TARGET.csv + KategoriItem.csv: semicolon
   async function fetchFromGitHub() {
     const [itemSaleText, kategoriText, targetText] = await Promise.all([
       fetch(CONFIG.GITHUB_ITEMSALE_URL).then(r => { if (!r.ok) throw new Error('ITEMSALE.TXT'); return r.text(); }),
-      fetch(CONFIG.SHEETS_KATEGORI_URL).then(r => { if (!r.ok) throw new Error('KategoriItem'); return r.text(); }),
-      fetch(CONFIG.SHEETS_TARGET_URL).then(r => { if (!r.ok) throw new Error('TARGET'); return r.text(); }),
+      fetch(CONFIG.GITHUB_KATEGORI_URL).then(r => { if (!r.ok) throw new Error('KategoriItem.csv'); return r.text(); }),
+      fetch(CONFIG.GITHUB_TARGET_URL).then(r => { if (!r.ok) throw new Error('TARGET.csv'); return r.text(); }),
     ]);
-    const kategoriMap = Parser.parseKategori(kategoriText, true);
+    const kategoriMap = Parser.parseKategori(kategoriText, false);
     const sales       = Parser.parseItemSale(itemSaleText, kategoriMap, false);
-    const targets     = Parser.parseTarget(targetText, true);
+    const targets     = Parser.parseTarget(targetText, false);
     const categories  = [];
     kategoriMap.forEach((cat, prod) => categories.push({ product: prod, category: cat }));
     return { sales, targets, categories };
@@ -260,12 +259,12 @@ const API = (() => {
     const sessionData = loadFromSession();
     if (sessionData) return sessionData;
 
-    // 2. GitHub ITEMSALE.TXT + Google Sheets Kategori/Target (sumber utama)
-    if (CONFIG.GITHUB_ITEMSALE_URL && CONFIG.SHEETS_KATEGORI_URL && CONFIG.SHEETS_TARGET_URL) {
+    // 2. GitHub repo — sumber utama (ITEMSALE.TXT + TARGET.csv + KategoriItem.csv)
+    if (CONFIG.GITHUB_ITEMSALE_URL && CONFIG.GITHUB_TARGET_URL && CONFIG.GITHUB_KATEGORI_URL) {
       return fetchFromGitHub();
     }
 
-    // 3. Google Sheets semua CSV (fallback jika GitHub tidak dikonfigurasi)
+    // 3. Google Sheets semua CSV (fallback)
     if (CONFIG.SHEETS_SALES_URL && CONFIG.SHEETS_KATEGORI_URL && CONFIG.SHEETS_TARGET_URL) {
       return fetchFromSheets();
     }

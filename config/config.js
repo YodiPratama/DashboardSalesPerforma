@@ -1,12 +1,13 @@
 const CONFIG = {
   GAS_API_URL: '',
 
-  // ── GitHub Raw URL — ITEMSALE.TXT langsung dari repo (prioritas utama) ──────
-  // Taruh file ITEMSALE.TXT di folder data/ lalu commit + push
+  // ── GitHub Raw URLs — file langsung dari repo (prioritas utama) ─────────────
+  // Taruh file ITEMSALE.TXT / TARGET.csv di root repo lalu commit + push
   GITHUB_ITEMSALE_URL: 'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/ITEMSALE.TXT',
+  GITHUB_TARGET_URL:   'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/TARGET.csv',
 
   // ── Google Sheets CSV URLs (Publish to web → CSV) ──────────────────────────
-  // Kategori + Target tetap dari Google Sheets (file kecil, tidak timeout)
+  // Kategori tetap dari Google Sheets; TARGET kini dibaca dari GitHub (GITHUB_TARGET_URL)
   SHEETS_SALES_URL:    '',   // Tidak dipakai — data penjualan kini dari GITHUB_ITEMSALE_URL
   SHEETS_KATEGORI_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=1369270145&single=true&output=csv',
   SHEETS_TARGET_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=748998745&single=true&output=csv',

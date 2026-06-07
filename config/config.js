@@ -9,7 +9,7 @@ const CONFIG = {
   // Kategori + Target dari Google Sheets (file kecil, tidak timeout)
   SHEETS_SALES_URL:    '',   // Tidak dipakai — data penjualan kini dari GITHUB_ITEMSALE_URL
   SHEETS_KATEGORI_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=1369270145&single=true&output=csv',
-  SHEETS_TARGET_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUEd5CH4NenCBTmmtIk0CzE-pFTKF8uNsvvZ1ArtuBUL_4_kDYqzax3XaqHzFoXivXm9ZNAOVIlW3a/pub?gid=748998745&single=true&output=csv',
+  SHEETS_TARGET_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vT20x9jwpKbtqeLSlymhkn2h_suhwbXiCo9olPt6eaXHb4DfrhWZyNDjJ6gxduPnbtW5GVtqsn5k_5K/pub?gid=1866875969&single=true&output=csv',
 
   APP_NAME: 'Dashboard Sales BIT',
   APP_VERSION: '1.0.0',

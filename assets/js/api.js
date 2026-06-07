@@ -238,20 +238,18 @@ const API = (() => {
     return res.json();
   }
 
-  // ─── Fetch ITEMSALE.TXT + TARGET.csv dari GitHub, Kategori dari Sheets ──────
-  // ITEMSALE.TXT + TARGET.csv: format asli semicolon/tab dari repo
-  // Kategori: format CSV dari Google Sheets
+  // ─── Fetch ITEMSALE.TXT dari GitHub + Kategori/Target dari Sheets ────────
+  // ITEMSALE.TXT: format tab-separated asli MYOB (60+ kolom)
+  // Kategori + Target: format CSV compact dari Google Sheets
   async function fetchFromGitHub() {
-    const targetUrl = CONFIG.GITHUB_TARGET_URL || CONFIG.SHEETS_TARGET_URL;
-    const targetIsCSV = !CONFIG.GITHUB_TARGET_URL; // GitHub TARGET pakai semicolon (bukan CSV)
     const [itemSaleText, kategoriText, targetText] = await Promise.all([
       fetch(CONFIG.GITHUB_ITEMSALE_URL).then(r => { if (!r.ok) throw new Error('ITEMSALE.TXT'); return r.text(); }),
       fetch(CONFIG.SHEETS_KATEGORI_URL).then(r => { if (!r.ok) throw new Error('KategoriItem'); return r.text(); }),
-      fetch(targetUrl).then(r => { if (!r.ok) throw new Error('TARGET'); return r.text(); }),
+      fetch(CONFIG.SHEETS_TARGET_URL).then(r => { if (!r.ok) throw new Error('TARGET'); return r.text(); }),
     ]);
     const kategoriMap = Parser.parseKategori(kategoriText, true);
     const sales       = Parser.parseItemSale(itemSaleText, kategoriMap, false);
-    const targets     = Parser.parseTarget(targetText, targetIsCSV);
+    const targets     = Parser.parseTarget(targetText, true);
     const categories  = [];
     kategoriMap.forEach((cat, prod) => categories.push({ product: prod, category: cat }));
     return { sales, targets, categories };

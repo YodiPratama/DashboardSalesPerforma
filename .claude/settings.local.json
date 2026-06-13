@@ -15,7 +15,16 @@
       "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" show --stat HEAD -- ITEMSALE.TXT; Write-Host \"---LAST COMMIT---\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" show 0914911 --name-only)",
       "PowerShell($file = \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\ITEMSALE.TXT\"; $info = Get-Item $file; Write-Host \"Size: $\\($info.Length\\) bytes\"; Write-Host \"Last Modified: $\\($info.LastWriteTime\\)\"; \\(Get-Content $file | Measure-Object -Line\\).Lines | Write-Host)",
       "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" diff --no-index --word-diff /dev/null ITEMSALE.TXT 2>&1 | Select-Object -First 5; Write-Host \"---\"; & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" ls-files -s ITEMSALE.TXT)",
-      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; $hash = & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" hash-object \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\ITEMSALE.TXT\"; Write-Host \"Working file hash: $hash\"; Write-Host \"Index hash:        055464b7e3a62ba1f82388d80f6393c2e971271f\")"
+      "PowerShell($git = \"C:\\\\Users\\\\LOQ\\\\AppData\\\\Local\\\\GitHubDesktop\\\\app-3.5.11\\\\resources\\\\app\\\\git\\\\cmd\\\\git.exe\"; $hash = & $git -C \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" hash-object \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\\\\ITEMSALE.TXT\"; Write-Host \"Working file hash: $hash\"; Write-Host \"Index hash:        055464b7e3a62ba1f82388d80f6393c2e971271f\")",
+      "Bash(node -e ' *)",
+      "Bash(git show *)",
+      "Bash(mkdir -p /tmp)",
+      "Bash(tr -d '\\\\r')",
+      "Bash(diff old_itemsale.txt new_normalized.txt)",
+      "Bash(cd \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" && rm -f old_itemsale.txt new_normalized.txt diff_output.txt)"
+    ],
+    "additionalDirectories": [
+      "d:\\AAA_FOLDER KERJA\\BINTANG INDONESIA TIMUR\\DASHBOARD BIT\\DashboardSalesPerforma"
     ]
   }
 }

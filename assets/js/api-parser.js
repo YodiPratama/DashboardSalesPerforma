@@ -43,9 +43,14 @@ const Parser = (() => {
   }
 
   // Build salesman name (uppercase) → config object map
+  // Includes aliases (e.g. "OFFICE" → NI PUTU ENY SUKARIASIH) for names that
+  // appear differently in MYOB exports.
   function _buildSalesmanMap() {
     const map = {};
-    CONFIG.SALESMAN_LIST.forEach(sm => { map[sm.name.toUpperCase().trim()] = sm; });
+    CONFIG.SALESMAN_LIST.forEach(sm => {
+      map[sm.name.toUpperCase().trim()] = sm;
+      (sm.aliases || []).forEach(alias => { map[alias.toUpperCase().trim()] = sm; });
+    });
     return map;
   }
 

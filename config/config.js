@@ -33,7 +33,7 @@ const CONFIG = {
   ],
 
   SALESMAN_LIST: [
-    { id: 'SM001', name: 'NI PUTU ENY SUKARIASIH',  area: '', aliases: ['OFFICE'] },
+    { id: 'SM001', name: 'OFFICE',  area: '', aliases: ['NI PUTU ENY SUKARIASIH'] },
     { id: 'SM002', name: 'WAYAN SUARTAMA',           area: '' },
     { id: 'SM003', name: 'KADEK ANDRE ADI PRASETYA', area: '' },
     { id: 'SM004', name: 'ANGGA',                    area: '' },

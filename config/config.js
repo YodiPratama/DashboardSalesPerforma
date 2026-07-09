@@ -1,11 +1,12 @@
 const CONFIG = {
   GAS_API_URL: '',
 
-  // ── GitHub Raw URLs — semua data langsung dari repo ─────────────────────────
+  // ── Data URLs — via jsDelivr CDN (lebih stabil dari raw.githubusercontent.com) ──
   // Update data: edit file → commit + push via GitHub Desktop → dashboard auto-refresh
-  GITHUB_ITEMSALE_URL: 'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/ITEMSALE.TXT',
-  GITHUB_TARGET_URL:   'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/TARGET.csv',
-  GITHUB_KATEGORI_URL: 'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/KategoriItem.csv',
+  // jsDelivr cache update: tambahkan ?v=YYYYMMDD di URL jika data tidak update setelah push
+  GITHUB_ITEMSALE_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT',
+  GITHUB_TARGET_URL:   'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/TARGET.csv',
+  GITHUB_KATEGORI_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/KategoriItem.csv',
 
   // ── Google Sheets CSV URLs — tidak dipakai, semua sudah dari GitHub ─────────
   SHEETS_SALES_URL:    '',

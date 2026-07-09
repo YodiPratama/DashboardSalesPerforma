@@ -21,7 +21,9 @@
       "Bash(mkdir -p /tmp)",
       "Bash(tr -d '\\\\r')",
       "Bash(diff old_itemsale.txt new_normalized.txt)",
-      "Bash(cd \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" && rm -f old_itemsale.txt new_normalized.txt diff_output.txt)"
+      "Bash(cd \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" && rm -f old_itemsale.txt new_normalized.txt diff_output.txt)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ],
     "additionalDirectories": [
       "d:\\AAA_FOLDER KERJA\\BINTANG INDONESIA TIMUR\\DASHBOARD BIT\\DashboardSalesPerforma"

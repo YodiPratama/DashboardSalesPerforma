@@ -147,10 +147,28 @@ const App = (() => {
   }
 
   // ─── Loading State ────────────────────────────────────────────────────────
-  function _setLoading(state) {
+  function _setLoading(state, errorMsg) {
     AppState.loading = state;
     const overlay = document.getElementById('loading-overlay');
-    if (overlay) overlay.style.display = state ? 'flex' : 'none';
+    if (!overlay) return;
+    if (state) {
+      overlay.style.display = 'flex';
+      const txt = overlay.querySelector('.loading-text');
+      if (txt) txt.textContent = 'Memuat data…';
+      overlay.style.cursor = '';
+    } else if (errorMsg) {
+      overlay.style.display = 'flex';
+      overlay.style.cursor = 'pointer';
+      overlay.innerHTML = `
+        <div style="text-align:center;max-width:400px;padding:0 20px">
+          <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+          <div style="font-size:14px;font-weight:600;color:var(--accent-red,#ef4444);margin-bottom:8px">Gagal Memuat Data</div>
+          <div style="font-size:12px;color:var(--text-secondary,#94a3b8);margin-bottom:16px;line-height:1.6">${errorMsg}</div>
+          <button onclick="document.getElementById('loading-overlay').style.display='none';App.render()" style="padding:8px 20px;background:var(--accent-blue,#4f9cf9);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">Coba Lagi</button>
+        </div>`;
+    } else {
+      overlay.style.display = 'none';
+    }
   }
 
   // ─── Data Date Badge ─────────────────────────────────────────────────────
@@ -219,10 +237,15 @@ const App = (() => {
         SectionManager.renderCurrent();
       }
 
+      _setLoading(false);
+
     } catch (err) {
       console.error('Render error:', err);
-    } finally {
-      _setLoading(false);
+      AppState.rawData = null;
+      const msg = err?.message
+        ? `Error: ${err.message}<br><br>Pastikan koneksi internet aktif dan coba refresh halaman.`
+        : 'Terjadi kesalahan saat memuat data. Coba refresh halaman.';
+      _setLoading(false, msg);
     }
   }
 

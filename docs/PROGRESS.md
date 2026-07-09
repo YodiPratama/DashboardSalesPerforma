@@ -27,7 +27,8 @@
 
 | Tanggal    | Perubahan |
 |------------|-----------|
-| 2026-07-09 | **Bug fix**: Tambah error display visible di loading overlay jika fetch data dari GitHub gagal — sebelumnya error hanya di console, user tidak tahu kenapa data tidak muncul. Tombol "Coba Lagi" otomatis reset dan re-fetch. |
+| 2026-07-09 | **Fix CDN**: Ganti URL data dari `raw.githubusercontent.com` ke `cdn.jsdelivr.net` — raw GitHub tidak stabil/terblokir, jsDelivr lebih reliable di Indonesia. |
+| 2026-07-09 | **Bug fix**: Tambah error display visible di loading overlay jika fetch data gagal — sebelumnya error hanya di console. Tombol "Coba Lagi" otomatis reset dan re-fetch. |
 | 2026-06-07 | Tambah `GITHUB_TARGET_URL` → TARGET.csv sekarang dari GitHub repo, bukan Google Sheets |
 | 2026-06-07 | Tambah `GITHUB_KATEGORI_URL` → KategoriItem.csv dari GitHub repo |
 | 2026-06-07 | Semua Sheets URLs dikosongkan, semua data sudah dari GitHub |

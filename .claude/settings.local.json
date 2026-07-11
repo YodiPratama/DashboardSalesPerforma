@@ -25,7 +25,14 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(node --check assets/js/api.js)"
+      "Bash(node --check assets/js/api.js)",
+      "Bash(curl -s -D - \"https://yodipratama.github.io/DashboardSalesPerforma/config/config.js\" -o /tmp/live_config.js)",
+      "Read(//tmp/**)",
+      "Bash(curl -s \"https://yodipratama.github.io/DashboardSalesPerforma/assets/js/api.js\")",
+      "Bash(curl -s -D - \"https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT\" -o /tmp/live_itemsale.txt)",
+      "Bash(curl -s -D - \"https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT?v=$\\(date +%s\\)\" -o /tmp/live_itemsale_v.txt)",
+      "Bash(curl -s -D - \"https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/ITEMSALE.TXT\" -o /tmp/raw_itemsale.txt)",
+      "Bash(curl -s -D - \"https://purge.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT\")"
     ],
     "additionalDirectories": [
       "d:\\AAA_FOLDER KERJA\\BINTANG INDONESIA TIMUR\\DASHBOARD BIT\\DashboardSalesPerforma"

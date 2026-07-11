@@ -1,13 +1,17 @@
 const CONFIG = {
   GAS_API_URL: '',
 
-  // ── Data URLs — via jsDelivr CDN (lebih stabil dari raw.githubusercontent.com) ──
+  // ── Data URLs — raw.githubusercontent.com (utama, cache ~5 menit) ───────────
   // Update data: edit file → commit + push via GitHub Desktop → dashboard auto-refresh
-  // Cache-busting (?v=timestamp) otomatis ditambahkan di api.js fetchFromGitHub(),
-  // jadi tidak perlu edit URL manual lagi setiap push.
-  GITHUB_ITEMSALE_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT',
-  GITHUB_TARGET_URL:   'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/TARGET.csv',
-  GITHUB_KATEGORI_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/KategoriItem.csv',
+  // jsDelivr dipakai sebagai fallback saja (cache-nya bisa tertahan 12+ jam dan
+  // mengabaikan query string cache-busting, jadi jangan jadikan sumber utama).
+  GITHUB_ITEMSALE_URL: 'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/ITEMSALE.TXT',
+  GITHUB_TARGET_URL:   'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/TARGET.csv',
+  GITHUB_KATEGORI_URL: 'https://raw.githubusercontent.com/YodiPratama/DashboardSalesPerforma/main/KategoriItem.csv',
+
+  GITHUB_ITEMSALE_FALLBACK_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT',
+  GITHUB_TARGET_FALLBACK_URL:   'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/TARGET.csv',
+  GITHUB_KATEGORI_FALLBACK_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/KategoriItem.csv',
 
   // ── Google Sheets CSV URLs — tidak dipakai, semua sudah dari GitHub ─────────
   SHEETS_SALES_URL:    '',

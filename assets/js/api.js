@@ -240,17 +240,32 @@ const API = (() => {
 
   // ─── Fetch semua data dari GitHub repo ───────────────────────────────────────
   // ITEMSALE.TXT: tab-separated MYOB | TARGET.csv + KategoriItem.csv: semicolon
-  // Query param ?v=<timestamp> memaksa browser & jsDelivr CDN ambil versi terbaru
-  // tiap load, karena jsDelivr cache branch @main bisa tertahan 12+ jam.
+  //
+  // raw.githubusercontent.com dicoba dulu (cache pendek, ~5 menit, jadi update
+  // cepat setelah push). Kalau raw gagal/di-block jaringan, fallback ke jsDelivr
+  // (cache lebih lama tapi lebih stabil aksesnya).
   function bustCache(url) {
     return `${url}?v=${Date.now()}`;
   }
 
+  async function fetchWithFallback(primaryUrl, fallbackUrl, label) {
+    try {
+      const res = await fetch(bustCache(primaryUrl));
+      if (!res.ok) throw new Error(`${label} HTTP ${res.status}`);
+      return await res.text();
+    } catch (err) {
+      if (!fallbackUrl) throw err;
+      const res = await fetch(fallbackUrl);
+      if (!res.ok) throw new Error(label);
+      return await res.text();
+    }
+  }
+
   async function fetchFromGitHub() {
     const [itemSaleText, kategoriText, targetText] = await Promise.all([
-      fetch(bustCache(CONFIG.GITHUB_ITEMSALE_URL)).then(r => { if (!r.ok) throw new Error('ITEMSALE.TXT'); return r.text(); }),
-      fetch(bustCache(CONFIG.GITHUB_KATEGORI_URL)).then(r => { if (!r.ok) throw new Error('KategoriItem.csv'); return r.text(); }),
-      fetch(bustCache(CONFIG.GITHUB_TARGET_URL)).then(r => { if (!r.ok) throw new Error('TARGET.csv'); return r.text(); }),
+      fetchWithFallback(CONFIG.GITHUB_ITEMSALE_URL, CONFIG.GITHUB_ITEMSALE_FALLBACK_URL, 'ITEMSALE.TXT'),
+      fetchWithFallback(CONFIG.GITHUB_KATEGORI_URL, CONFIG.GITHUB_KATEGORI_FALLBACK_URL, 'KategoriItem.csv'),
+      fetchWithFallback(CONFIG.GITHUB_TARGET_URL, CONFIG.GITHUB_TARGET_FALLBACK_URL, 'TARGET.csv'),
     ]);
     const kategoriMap = Parser.parseKategori(kategoriText, false);
     const sales       = Parser.parseItemSale(itemSaleText, kategoriMap, false);

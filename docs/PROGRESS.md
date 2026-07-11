@@ -27,7 +27,7 @@
 
 | Tanggal    | Perubahan |
 |------------|-----------|
-| 2026-07-11 | **Fix cache jsDelivr**: Tambah cache-busting `?v=<timestamp>` otomatis di `fetchFromGitHub()` (api.js) — jsDelivr cache branch `@main` bisa tertahan 12+ jam sehingga update data lambat muncul di web setelah push. Sekarang tiap load selalu ambil versi terbaru. |
+| 2026-07-11 | **Fix data lambat update**: jsDelivr ternyata mengabaikan query string cache-busting (edge cache 12 jam + browser cache 7 hari, tidak bisa di-bypass). Sumber utama dikembalikan ke `raw.githubusercontent.com` (cache cuma 5 menit) dengan jsDelivr sebagai fallback otomatis kalau raw gagal/di-block jaringan. Lihat `fetchWithFallback()` di api.js. |
 | 2026-07-09 | **Fix CDN**: Ganti URL data dari `raw.githubusercontent.com` ke `cdn.jsdelivr.net` — raw GitHub tidak stabil/terblokir, jsDelivr lebih reliable di Indonesia. |
 | 2026-07-09 | **Bug fix**: Tambah error display visible di loading overlay jika fetch data gagal — sebelumnya error hanya di console. Tombol "Coba Lagi" otomatis reset dan re-fetch. |
 | 2026-06-07 | Tambah `GITHUB_TARGET_URL` → TARGET.csv sekarang dari GitHub repo, bukan Google Sheets |

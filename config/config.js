@@ -3,7 +3,8 @@ const CONFIG = {
 
   // ── Data URLs — via jsDelivr CDN (lebih stabil dari raw.githubusercontent.com) ──
   // Update data: edit file → commit + push via GitHub Desktop → dashboard auto-refresh
-  // jsDelivr cache update: tambahkan ?v=YYYYMMDD di URL jika data tidak update setelah push
+  // Cache-busting (?v=timestamp) otomatis ditambahkan di api.js fetchFromGitHub(),
+  // jadi tidak perlu edit URL manual lagi setiap push.
   GITHUB_ITEMSALE_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/ITEMSALE.TXT',
   GITHUB_TARGET_URL:   'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/TARGET.csv',
   GITHUB_KATEGORI_URL: 'https://cdn.jsdelivr.net/gh/YodiPratama/DashboardSalesPerforma@main/KategoriItem.csv',

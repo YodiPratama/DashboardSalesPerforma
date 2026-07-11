@@ -24,7 +24,8 @@
       "Bash(cd \"d:\\\\AAA_FOLDER KERJA\\\\BINTANG INDONESIA TIMUR\\\\DASHBOARD BIT\\\\DashboardSalesPerforma\" && rm -f old_itemsale.txt new_normalized.txt diff_output.txt)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(node --check assets/js/api.js)"
     ],
     "additionalDirectories": [
       "d:\\AAA_FOLDER KERJA\\BINTANG INDONESIA TIMUR\\DASHBOARD BIT\\DashboardSalesPerforma"

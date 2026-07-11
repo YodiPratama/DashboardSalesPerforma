@@ -1,7 +1,7 @@
 # Dashboard Sales BIT — Progress Log
 
 **Project:** DashboardSalesPerforma  
-**Update terakhir:** 2026-07-09
+**Update terakhir:** 2026-07-11
 
 ---
 
@@ -27,6 +27,7 @@
 
 | Tanggal    | Perubahan |
 |------------|-----------|
+| 2026-07-11 | **Fix cache jsDelivr**: Tambah cache-busting `?v=<timestamp>` otomatis di `fetchFromGitHub()` (api.js) — jsDelivr cache branch `@main` bisa tertahan 12+ jam sehingga update data lambat muncul di web setelah push. Sekarang tiap load selalu ambil versi terbaru. |
 | 2026-07-09 | **Fix CDN**: Ganti URL data dari `raw.githubusercontent.com` ke `cdn.jsdelivr.net` — raw GitHub tidak stabil/terblokir, jsDelivr lebih reliable di Indonesia. |
 | 2026-07-09 | **Bug fix**: Tambah error display visible di loading overlay jika fetch data gagal — sebelumnya error hanya di console. Tombol "Coba Lagi" otomatis reset dan re-fetch. |
 | 2026-06-07 | Tambah `GITHUB_TARGET_URL` → TARGET.csv sekarang dari GitHub repo, bukan Google Sheets |

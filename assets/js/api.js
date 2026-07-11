@@ -240,11 +240,17 @@ const API = (() => {
 
   // ─── Fetch semua data dari GitHub repo ───────────────────────────────────────
   // ITEMSALE.TXT: tab-separated MYOB | TARGET.csv + KategoriItem.csv: semicolon
+  // Query param ?v=<timestamp> memaksa browser & jsDelivr CDN ambil versi terbaru
+  // tiap load, karena jsDelivr cache branch @main bisa tertahan 12+ jam.
+  function bustCache(url) {
+    return `${url}?v=${Date.now()}`;
+  }
+
   async function fetchFromGitHub() {
     const [itemSaleText, kategoriText, targetText] = await Promise.all([
-      fetch(CONFIG.GITHUB_ITEMSALE_URL).then(r => { if (!r.ok) throw new Error('ITEMSALE.TXT'); return r.text(); }),
-      fetch(CONFIG.GITHUB_KATEGORI_URL).then(r => { if (!r.ok) throw new Error('KategoriItem.csv'); return r.text(); }),
-      fetch(CONFIG.GITHUB_TARGET_URL).then(r => { if (!r.ok) throw new Error('TARGET.csv'); return r.text(); }),
+      fetch(bustCache(CONFIG.GITHUB_ITEMSALE_URL)).then(r => { if (!r.ok) throw new Error('ITEMSALE.TXT'); return r.text(); }),
+      fetch(bustCache(CONFIG.GITHUB_KATEGORI_URL)).then(r => { if (!r.ok) throw new Error('KategoriItem.csv'); return r.text(); }),
+      fetch(bustCache(CONFIG.GITHUB_TARGET_URL)).then(r => { if (!r.ok) throw new Error('TARGET.csv'); return r.text(); }),
     ]);
     const kategoriMap = Parser.parseKategori(kategoriText, false);
     const sales       = Parser.parseItemSale(itemSaleText, kategoriMap, false);

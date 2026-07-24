@@ -1,7 +1,8 @@
 const Parser = (() => {
 
-  // Proper CSV line parser — handles quoted fields containing commas
-  function _parseCSVLine(line) {
+  // Proper delimited-line parser — handles quoted fields containing the delimiter
+  // (e.g. a product name like "T 07P-2 ; 4 M ..." quoted in a semicolon file)
+  function _parseDelimitedLine(line, delim = ',') {
     const result = [];
     let cur = '', inQ = false;
     for (let i = 0; i < line.length; i++) {
@@ -9,7 +10,7 @@ const Parser = (() => {
       if (ch === '"') {
         if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
         else inQ = !inQ;
-      } else if (ch === ',' && !inQ) {
+      } else if (ch === delim && !inQ) {
         result.push(cur); cur = '';
       } else {
         cur += ch;
@@ -17,6 +18,10 @@ const Parser = (() => {
     }
     result.push(cur);
     return result;
+  }
+
+  function _parseCSVLine(line) {
+    return _parseDelimitedLine(line, ',');
   }
 
   // Indonesian Rupiah string → number
@@ -88,10 +93,10 @@ const Parser = (() => {
         product  = (cols[0] || '').trim();
         category = _normalizeCategory(cols[1] || '');
       } else {
-        const semi = line.indexOf(';');
-        if (semi === -1) continue;
-        product  = line.substring(0, semi).trim();
-        category = _normalizeCategory(line.substring(semi + 1));
+        const cols = _parseDelimitedLine(line, ';');
+        if (cols.length < 2) continue;
+        product  = (cols[0] || '').trim();
+        category = _normalizeCategory(cols[1] || '');
       }
       if (product) map.set(product.toUpperCase(), category);
     }

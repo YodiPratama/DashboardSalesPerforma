@@ -330,7 +330,7 @@ const App = (() => {
   // ─── KPI Card Click Shortcuts ─────────────────────────────────────────────
   function _bindKPICards() {
     function _goto(section, scrollId) {
-      SectionManager.navigate(section);
+      SectionManager.showSection(section);
       if (scrollId) {
         setTimeout(() => {
           const el = document.getElementById(scrollId);

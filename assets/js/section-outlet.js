@@ -33,7 +33,7 @@ const OutletSection = (() => {
     const cust = customers.find(c => c.id === custId);
     SectionManager.showSection('customer');
     if (!cust) return;
-    const showAllMonths = ['Lost', 'Dormant'].includes(cust.status);
+    const showAllMonths = cust.status === 'Lost';
     Modal.openCustomerModal(cust, AppState.rawData, AppState.filters, { showAllMonths });
   }
 

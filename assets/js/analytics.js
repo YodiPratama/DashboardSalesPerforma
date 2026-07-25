@@ -222,7 +222,7 @@ const Analytics = (() => {
   }
 
   // ─── Customer Table Data ──────────────────────────────────────────────────
-  // Includes ALL customers (Active, Lost, Dormant) not just current month buyers.
+  // Includes ALL customers (Active, New, Reactivated, Risk, Lost) not just current month buyers.
   function calcCustomerTable(rawData, filters) {
     const { sales } = rawData;
     const { year, month } = filters;
@@ -276,14 +276,14 @@ const Analytics = (() => {
 
       let status;
       if (inCur) {
-        if (!inPrev && everBeforePrev.has(c.id)) status = 'Reactivated';
-        else if (ao === 1)        status = 'Risk';
+        if (!inPrev && everBeforePrev.has(c.id))      status = 'Reactivated';
+        else if (!inPrev && !everBeforePrev.has(c.id)) status = 'New';
+        else if (ao === 1)         status = 'Risk';
         else if (missingCount > 0) status = 'Insight';
         else                       status = 'Active';
-      } else if (inPrev) {
-        status = 'Lost';
       } else {
-        status = 'Dormant';
+        // Lost & Dormant merged — both mean "not active this month"
+        status = 'Lost';
       }
 
       return {

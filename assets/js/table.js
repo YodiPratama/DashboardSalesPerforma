@@ -15,10 +15,10 @@ const Table = (() => {
     const map = {
       'Active':      '<span class="badge badge-green">Active</span>',
       'Insight':     '<span class="badge badge-amber">Active ⚡</span>',
+      'New':         '<span class="badge badge-purple">New (NOO)</span>',
       'Risk':        '<span class="badge badge-orange">At Risk</span>',
       'Reactivated': '<span class="badge badge-blue">Reactivated</span>',
       'Lost':        '<span class="badge badge-red">Lost</span>',
-      'Dormant':     '<span class="badge badge-gray">Dormant</span>',
     };
     return map[status] || `<span class="badge">${status}</span>`;
   }
@@ -34,7 +34,7 @@ const Table = (() => {
     const cust = _customers.find(c => c.id === custId);
     if (!cust) { console.warn('[Table] Customer not found in _customers array'); return; }
     if (typeof Modal === 'undefined') { console.error('[Table] Modal is not defined — check script load order'); return; }
-    const showAllMonths = ['Lost', 'Dormant'].includes(cust.status);
+    const showAllMonths = cust.status === 'Lost';
     Modal.openCustomerModal(cust, _rawData, _filters, { showAllMonths });
   }
 
@@ -47,10 +47,10 @@ const Table = (() => {
       { key: 'all',         label: 'Semua',         search: '' },
       { key: 'Active',      label: 'Active',         search: '^Active$' },
       { key: 'Insight',     label: 'Active ⚡',      search: '^Active ⚡$' },
+      { key: 'New',         label: 'New (NOO)',      search: '^New \\(NOO\\)$' },
       { key: 'Risk',        label: 'At Risk',        search: '^At Risk$' },
       { key: 'Reactivated', label: 'Reactivated',    search: '^Reactivated$' },
       { key: 'Lost',        label: 'Lost',           search: '^Lost$' },
-      { key: 'Dormant',     label: 'Dormant',        search: '^Dormant$' },
     ];
 
     el.innerHTML = `
@@ -114,7 +114,7 @@ const Table = (() => {
     const tbody = document.createElement('tbody');
     ranked.forEach((c, i) => {
       const rank = i + 1;
-      const inactive = ['Lost', 'Dormant'].includes(c.status);
+      const inactive = c.status === 'Lost';
       const lastActiveLabel = inactive && c.lastActiveYM ? (() => {
         const [y, m] = c.lastActiveYM.split('-').map(Number);
         return `${CONFIG.MONTHS_ID[m - 1]} ${y}`;

@@ -341,7 +341,7 @@ const App = (() => {
 
     const shortcuts = {
       'kpi-ao':             () => _goto('outlet', 'active-list'),
-      'kpi-new':            () => _goto('outlet', 'active-list'),
+      'kpi-new':            () => _goto('outlet', 'new-list'),
       'kpi-repeat':         () => _goto('outlet', 'active-list'),
       'kpi-lost':           () => _goto('outlet', 'lost-list'),
       'kpi-reactivated':    () => _goto('outlet', 'reactivated-list'),

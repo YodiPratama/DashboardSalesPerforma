@@ -551,7 +551,7 @@ table.dataTable tbody tr:hover .row-arrow-icon { stroke: var(--accent-blue); tra
 .prod-analytics-table td.prod-cell-name { max-width: 240px; font-weight: 600; word-break: break-word; }
 
 /* ── 13. Outlet Health Page ────────────────────────────────────────────────── */
-.oh-kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.oh-kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
 
 .oh-kpi {
   padding: 16px 18px;
@@ -565,7 +565,7 @@ table.dataTable tbody tr:hover .row-arrow-icon { stroke: var(--accent-blue); tra
 .oh-kpi-val { font-size: 28px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
 .oh-kpi-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
 
-.health-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.health-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
 
 .outlet-list  { max-height: 320px; overflow-y: auto; }
 .outlet-row   {

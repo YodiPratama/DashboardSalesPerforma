@@ -2,7 +2,6 @@ const OutletSection = (() => {
   let _retChart = null, _aoChart = null;
 
   function _prevMonth(y, m)  { return m === 1 ? { year: y - 1, month: 12 } : { year: y, month: m - 1 }; }
-  function _olderMonth(y, m) { const p = _prevMonth(y, m); return _prevMonth(p.year, p.month); }
 
   function _filterSales(sales, y, m, smId) {
     return sales.filter(s => {
@@ -121,32 +120,44 @@ const OutletSection = (() => {
     const curSales   = _filterSales(raw.sales, y, m, smVal);
     const prev       = _prevMonth(y, m);
     const prevSales  = _filterSales(raw.sales, prev.year, prev.month, smVal);
-    const older      = _olderMonth(y, m);
-    const olderSales = _filterSales(raw.sales, older.year, older.month, smVal);
 
-    const curSet         = _uniqueOutlets(curSales);
-    const prevSet        = _uniqueOutlets(prevSales);
-    const olderSet       = _uniqueOutlets(olderSales);
+    const curSet  = _uniqueOutlets(curSales);
+    const prevSet = _uniqueOutlets(prevSales);
+
+    // Ever active before prev month — same window Analytics.calcKPIs uses, so
+    // New/Reactivated here line up with the Overview cards.
+    const curYM  = `${y}-${String(m).padStart(2, '0')}`;
+    const prevYM = `${prev.year}-${String(prev.month).padStart(2, '0')}`;
+    const everSet = _uniqueOutlets(raw.sales.filter(s => {
+      const ym = s.date.substring(0, 7);
+      return ym < curYM && ym !== prevYM && (smVal === 'all' || s.salesman_id === smVal);
+    }));
+
     const lostSet        = new Set([...prevSet].filter(id => !curSet.has(id)));
-    const reactivatedSet = new Set([...curSet].filter(id => !prevSet.has(id) && olderSet.has(id)));
     const repeatSet      = new Set([...curSet].filter(id => prevSet.has(id)));
+    const reactivatedSet = new Set([...curSet].filter(id => !prevSet.has(id) && everSet.has(id)));
+    const newSet         = new Set([...curSet].filter(id => !prevSet.has(id) && !everSet.has(id)));
 
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     set('oh-ao',          Fmt.number(curSet.size));
+    set('oh-new',         Fmt.number(newSet.size));
     set('oh-repeat',      Fmt.number(repeatSet.size));
     set('oh-lost',        Fmt.number(lostSet.size));
     set('oh-reactivated', Fmt.number(reactivatedSet.size));
     set('active-count',      curSet.size);
+    set('new-count',         newSet.size);
     set('lost-count',        lostSet.size);
     set('reactivated-count', reactivatedSet.size);
 
     _renderOutletList('active-list',      curSet,         raw, curSales);
+    _renderOutletList('new-list',         newSet,         raw, curSales);
     _renderOutletList('lost-list',        lostSet,        raw, prevSales);
     _renderOutletList('reactivated-list', reactivatedSet, raw, curSales);
 
     // Panel header totals
     const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     setVal('active-value',      Fmt.currency(_sumSales(curSet,         curSales)));
+    setVal('new-value',         Fmt.currency(_sumSales(newSet,         curSales)));
     setVal('lost-value',        Fmt.currency(_sumSales(lostSet,        prevSales)));
     setVal('reactivated-value', Fmt.currency(_sumSales(reactivatedSet, curSales)));
 

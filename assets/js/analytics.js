@@ -89,6 +89,9 @@ const Analytics = (() => {
     }));
     const reactivated = [...curOutlets].filter(id => !prevOutlets.has(id) && everOutlets.has(id)).length;
 
+    // New: active now, not in prev month, and never active before either
+    const newOutlet = [...curOutlets].filter(id => !prevOutlets.has(id) && !everOutlets.has(id)).length;
+
     // Consistency: outlets active in all 3 months (M-2, M-1, current)
     const older = _prevMonth(prev.year, prev.month);
     const olderOutlets = _uniqueOutlets(_filterSales(sales, {
@@ -106,7 +109,7 @@ const Analytics = (() => {
       totalTarget, achievement,
       projection, elapsed, daysInMonth,
       invoices, totalQty,
-      activeOutlet, repeatOutlet, lostOutlet, reactivated,
+      activeOutlet, repeatOutlet, lostOutlet, reactivated, newOutlet,
       consistencyPct, productsMissed: productsMissed.length,
       productsMissedList: productsMissed,
     };

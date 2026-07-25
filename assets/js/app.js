@@ -99,6 +99,7 @@ const App = (() => {
     _updateKPI('kpi-invoice',          Fmt.number(kpis.invoices),        null);
     _updateKPI('kpi-qty',              Fmt.number(kpis.totalQty),        null);
     _updateKPI('kpi-ao',               Fmt.number(kpis.activeOutlet),    null);
+    _updateKPI('kpi-new',              Fmt.number(kpis.newOutlet),       null);
     _updateKPI('kpi-repeat',           Fmt.number(kpis.repeatOutlet),    null);
     _updateKPI('kpi-lost',             Fmt.number(kpis.lostOutlet),      null, true);
     _updateKPI('kpi-reactivated',      Fmt.number(kpis.reactivated),     null);
@@ -340,6 +341,7 @@ const App = (() => {
 
     const shortcuts = {
       'kpi-ao':             () => _goto('outlet', 'active-list'),
+      'kpi-new':            () => _goto('outlet', 'active-list'),
       'kpi-repeat':         () => _goto('outlet', 'active-list'),
       'kpi-lost':           () => _goto('outlet', 'lost-list'),
       'kpi-reactivated':    () => _goto('outlet', 'reactivated-list'),

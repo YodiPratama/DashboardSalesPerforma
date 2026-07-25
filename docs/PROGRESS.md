@@ -1,7 +1,7 @@
 # Dashboard Sales BIT — Progress Log
 
 **Project:** DashboardSalesPerforma  
-**Update terakhir:** 2026-07-11
+**Update terakhir:** 2026-07-25
 
 ---
 
@@ -11,7 +11,7 @@
 - [x] Parser MYOB tab-separated (ITEMSALE.TXT)
 - [x] Parser TARGET.csv dan KategoriItem.csv (semicolon-separated)
 - [x] Filter bulan, salesman, kategori
-- [x] KPI overview: Total Sales, Achievement, Growth, Proyeksi, AO, Repeat, Lost, Reactivated, Consistency
+- [x] KPI overview: Total Sales, Achievement, Growth, Proyeksi, AO, New, Repeat, Reactivated, Lost, Consistency
 - [x] Auto-switch filter bulan ke bulan terakhir yang ada di data
 - [x] Section Salesman, Customer, Category, Outlet Health, Tren Bulanan
 - [x] Upload manual MYOB via modal (session storage)
@@ -27,6 +27,7 @@
 
 | Tanggal    | Perubahan |
 |------------|-----------|
+| 2026-07-25 | **Tambah KPI "New Outlet"**: `activeOutlet` sebelumnya tidak sama dengan `repeatOutlet + reactivated` karena outlet yang baru pertama kali transaksi (belum pernah beli sebelumnya) tidak terhitung di keduanya. Ditambah `newOutlet` di `calcKPIs()` (analytics.js) sehingga `Active = New + Repeat + Reactivated`. Row KPI overview dirombak: Row 2 jadi "Volume & Kualitas" (Invoice, Qty, Product Missing, Consistency), Row 3 jadi baris 5-kolom "Outlet Lifecycle" (AO → New → Repeat → Reactivated → Lost) via class `.kpi-grid-5`. Card baru juga masuk export Excel di `section-outlet.js`. |
 | 2026-07-11 | **Fix data lambat update**: jsDelivr ternyata mengabaikan query string cache-busting (edge cache 12 jam + browser cache 7 hari, tidak bisa di-bypass). Sumber utama dikembalikan ke `raw.githubusercontent.com` (cache cuma 5 menit) dengan jsDelivr sebagai fallback otomatis kalau raw gagal/di-block jaringan. Lihat `fetchWithFallback()` di api.js. |
 | 2026-07-09 | **Fix CDN**: Ganti URL data dari `raw.githubusercontent.com` ke `cdn.jsdelivr.net` — raw GitHub tidak stabil/terblokir, jsDelivr lebih reliable di Indonesia. |
 | 2026-07-09 | **Bug fix**: Tambah error display visible di loading overlay jika fetch data gagal — sebelumnya error hanya di console. Tombol "Coba Lagi" otomatis reset dan re-fetch. |

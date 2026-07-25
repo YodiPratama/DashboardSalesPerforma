@@ -152,6 +152,7 @@
 
 /* ── 6. KPI Grid & Cards ───────────────────────────────────────────────────── */
 .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.kpi-grid-5 { grid-template-columns: repeat(5,1fr); }
 
 .kpi-card {
   padding: 18px 20px;

@@ -160,6 +160,7 @@ const OutletSection = (() => {
     const kpis = Analytics.calcKPIs(raw, filters);
     const rows = [
       { Metric: 'Active Outlet',  Nilai: kpis.activeOutlet },
+      { Metric: 'New Outlet',     Nilai: kpis.newOutlet },
       { Metric: 'Repeat Outlet',  Nilai: kpis.repeatOutlet },
       { Metric: 'Lost Outlet',    Nilai: kpis.lostOutlet },
       { Metric: 'Reactivated',    Nilai: kpis.reactivated },

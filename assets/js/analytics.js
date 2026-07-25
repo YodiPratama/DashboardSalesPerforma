@@ -222,7 +222,7 @@ const Analytics = (() => {
   }
 
   // ─── Customer Table Data ──────────────────────────────────────────────────
-  // Includes ALL customers (Active, New, Reactivated, Risk, Lost) not just current month buyers.
+  // Includes ALL customers (Active, New, Reactivated, Risk, Lost, Dormant) not just current month buyers.
   function calcCustomerTable(rawData, filters) {
     const { sales } = rawData;
     const { year, month } = filters;
@@ -281,9 +281,11 @@ const Analytics = (() => {
         else if (ao === 1)         status = 'Risk';
         else if (missingCount > 0) status = 'Insight';
         else                       status = 'Active';
-      } else {
-        // Lost & Dormant merged — both mean "not active this month"
+      } else if (inPrev) {
+        // Matches Overview's "Lost Outlet" KPI: active last month, gone this month
         status = 'Lost';
+      } else {
+        status = 'Dormant';
       }
 
       return {

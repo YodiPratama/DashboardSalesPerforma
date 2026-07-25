@@ -97,7 +97,7 @@ const Modal = (() => {
     _rawData  = rawData;
     _filters  = filters;
 
-    // Lost: langsung tampilkan semua bulan (tidak ada transaksi di bulan filter)
+    // Lost/Dormant: langsung tampilkan semua bulan (tidak ada transaksi di bulan filter)
     if (options.showAllMonths) {
       _activeMonths = null;
     } else {
@@ -202,7 +202,7 @@ const Modal = (() => {
     }
 
     // Missing products: ever ordered by this customer, not ordered in the CURRENT dashboard month.
-    // Always fixed to dashboard filter month so Lost customers show useful insight
+    // Always fixed to dashboard filter month so Lost/Dormant customers show useful insight
     // regardless of which period is displayed in the modal.
     const curMonthYM   = `${filters.year}-${String(filters.month).padStart(2, '0')}`;
     const curMonthProds = new Set(
@@ -360,7 +360,8 @@ const Modal = (() => {
       'Insight':     { color:'var(--accent-green)',  bg:'var(--accent-green-dim)',  icon:'⚡', desc:'Aktif — ada produk missing' },
       'New':         { color:'var(--accent-purple)', bg:'var(--accent-purple-dim)', icon:'✦', desc:'Pembelian pertama kali (New Open Outlet)' },
       'Risk':        { color:'var(--accent-orange)', bg:'var(--accent-orange-dim)', icon:'⚠', desc:'Order sekali, risiko churn' },
-      'Lost':        { color:'var(--accent-red)',    bg:'var(--accent-red-dim)',    icon:'✕', desc:'Tidak order bulan ini' },
+      'Lost':        { color:'var(--accent-red)',    bg:'var(--accent-red-dim)',    icon:'✕', desc:'Aktif bulan lalu, tidak order bulan ini' },
+      'Dormant':     { color:'var(--text-muted)',    bg:'var(--border-subtle)',     icon:'—', desc:'Tidak aktif >2 bulan' },
       'Reactivated': { color:'var(--accent-blue)',   bg:'var(--accent-blue-dim)',   icon:'↺', desc:'Kembali aktif bulan ini' },
     };
     const cfg = map[status] || { color:'var(--text-muted)', bg:'var(--border-subtle)', icon:'?', desc:status };

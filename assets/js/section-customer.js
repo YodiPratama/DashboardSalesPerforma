@@ -2,13 +2,14 @@ const CustomerSection = (() => {
   let _statusChart = null, _topChart = null;
 
   function _renderSummary(customers) {
-    const counts = { Active: 0, New: 0, Reactivated: 0, Risk: 0, Lost: 0 };
+    const counts = { Active: 0, New: 0, Reactivated: 0, Risk: 0, Lost: 0, Dormant: 0 };
     customers.forEach(c => {
       if (c.status === 'Active' || c.status === 'Insight') counts.Active++;
       else if (c.status === 'New') counts.New++;
       else if (c.status === 'Reactivated') counts.Reactivated++;
       else if (c.status === 'Risk') counts.Risk++;
-      else counts.Lost++;
+      else if (c.status === 'Lost') counts.Lost++;
+      else counts.Dormant++;
     });
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     set('cnt-active', counts.Active);
@@ -16,6 +17,7 @@ const CustomerSection = (() => {
     set('cnt-reactivated', counts.Reactivated);
     set('cnt-risk', counts.Risk);
     set('cnt-lost', counts.Lost);
+    set('cnt-dormant', counts.Dormant);
   }
 
   function _renderCharts(customers) {
@@ -24,16 +26,17 @@ const CustomerSection = (() => {
     if (_statusChart) _statusChart.destroy();
     const c1 = document.getElementById('chart-status-donut');
     if (c1) {
-      const statusCounts = { Active: 0, New: 0, Reactivated: 0, 'At Risk': 0, Lost: 0 };
+      const statusCounts = { Active: 0, New: 0, Reactivated: 0, 'At Risk': 0, Lost: 0, Dormant: 0 };
       customers.forEach(c => {
         if (c.status === 'Active' || c.status === 'Insight') statusCounts['Active']++;
         else if (c.status === 'New') statusCounts['New']++;
         else if (c.status === 'Reactivated') statusCounts['Reactivated']++;
         else if (c.status === 'Risk') statusCounts['At Risk']++;
-        else statusCounts['Lost']++;
+        else if (c.status === 'Lost') statusCounts['Lost']++;
+        else statusCounts['Dormant']++;
       });
       const labels = Object.keys(statusCounts).filter(k => statusCounts[k] > 0);
-      const colorMap = { Active: '#4caf82', New: '#8b5cf6', Reactivated: '#4f9cf9', 'At Risk': '#f59e0b', Lost: '#ef4444' };
+      const colorMap = { Active: '#4caf82', New: '#8b5cf6', Reactivated: '#4f9cf9', 'At Risk': '#f59e0b', Lost: '#ef4444', Dormant: '#94a3b8' };
       _statusChart = new Chart(c1, {
         type: 'doughnut',
         data: {

@@ -19,6 +19,7 @@ const Table = (() => {
       'Risk':        '<span class="badge badge-orange">At Risk</span>',
       'Reactivated': '<span class="badge badge-blue">Reactivated</span>',
       'Lost':        '<span class="badge badge-red">Lost</span>',
+      'Dormant':     '<span class="badge badge-gray">Dormant</span>',
     };
     return map[status] || `<span class="badge">${status}</span>`;
   }
@@ -34,7 +35,7 @@ const Table = (() => {
     const cust = _customers.find(c => c.id === custId);
     if (!cust) { console.warn('[Table] Customer not found in _customers array'); return; }
     if (typeof Modal === 'undefined') { console.error('[Table] Modal is not defined — check script load order'); return; }
-    const showAllMonths = cust.status === 'Lost';
+    const showAllMonths = ['Lost', 'Dormant'].includes(cust.status);
     Modal.openCustomerModal(cust, _rawData, _filters, { showAllMonths });
   }
 
@@ -51,6 +52,7 @@ const Table = (() => {
       { key: 'Risk',        label: 'At Risk',        search: '^At Risk$' },
       { key: 'Reactivated', label: 'Reactivated',    search: '^Reactivated$' },
       { key: 'Lost',        label: 'Lost',           search: '^Lost$' },
+      { key: 'Dormant',     label: 'Dormant',        search: '^Dormant$' },
     ];
 
     el.innerHTML = `
@@ -114,7 +116,7 @@ const Table = (() => {
     const tbody = document.createElement('tbody');
     ranked.forEach((c, i) => {
       const rank = i + 1;
-      const inactive = c.status === 'Lost';
+      const inactive = ['Lost', 'Dormant'].includes(c.status);
       const lastActiveLabel = inactive && c.lastActiveYM ? (() => {
         const [y, m] = c.lastActiveYM.split('-').map(Number);
         return `${CONFIG.MONTHS_ID[m - 1]} ${y}`;
